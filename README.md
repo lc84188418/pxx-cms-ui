@@ -2,10 +2,10 @@
 
 ```bash
 # 克隆项目
-git clone https://gitee.com/y_project/RuoYi-Vue
+git clone git@github.com:lc84188418/pxx-cms-ui.git
 git add .
 git commit -m '提交代码'
-git push 
+git push
 
 # 进入项目目录
 cd ruoyi-ui

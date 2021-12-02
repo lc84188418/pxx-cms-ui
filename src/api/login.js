@@ -71,3 +71,15 @@ export function getJustAuth() {
     timeout: 20000
   })
 }
+
+// 访问第三方授权
+export function authRender(source) {
+  return request({
+    url: '/justAuth/render/'+source,
+    headers: {
+      isToken: false
+    },
+    method: 'get',
+    timeout: 20000
+  })
+}

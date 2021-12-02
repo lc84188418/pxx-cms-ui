@@ -3,12 +3,7 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
       <h3 class="title">PXX后台管理系统</h3>
       <el-form-item prop="username">
-        <el-input
-          v-model="loginForm.username"
-          type="text"
-          auto-complete="off"
-          placeholder="账号"
-        >
+        <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号">
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
@@ -38,7 +33,7 @@
           <img :src="codeUrl" @click="getCode" class="login-code-img"/>
         </div>
       </el-form-item>
- -->
+      -->
 
       <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox>
       <el-form-item style="width:100%;">
@@ -56,7 +51,16 @@
           <router-link class="link-type" :to="'/register'">立即注册</router-link>
         </div>
       </el-form-item>
+      <!-- 第三方授权登录 -->
+      <div class="just-auth">
+        <span>其他登录方式</span>
+        <el-row :data="justAuths">
+          <el-button icon="el-icon-search" circle @click="handleAuthRender('gitee')"></el-button>
+          <el-button icon="el-icon-search" circle @click="handleAuthRender('github')"></el-button>
+        </el-row>
+      </div>
     </el-form>
+
     <!--  底部  -->
     <div class="el-login-footer">
       <span>Copyright © 2018-2021 liushuaiguo All Rights Reserved.</span>
@@ -66,12 +70,13 @@
 
 <script>
 import { getJustAuth } from "@/api/login";
+import { authRender } from "@/api/login";
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from '@/utils/jsencrypt'
 
 export default {
   name: "Login",
-  data() {
+  data () {
     return {
       codeUrl: "",
       loginForm: {
@@ -96,31 +101,32 @@ export default {
       // 注册开关
       register: false,
       redirect: undefined,
-      justAuths: undefined
+      justAuths: null
     };
   },
   watch: {
     $route: {
-      handler: function(route) {
+      handler: function (route) {
         this.redirect = route.query && route.query.redirect;
       },
       immediate: true
     }
   },
-  created() {
+  created () {
     this.getJustAuth();
-    //this.getCode();
+    // this.getCode();
     this.getCookie();
   },
   methods: {
-    getJustAuth() {
+    /** 获取系统支持的第三方授权平台 */
+    getJustAuth () {
       getJustAuth().then(res => {
         justAuths = res.data;
 
       });
     },
-
-    getCode() {
+    /** 获取验证码 */
+    getCode () {
       getCodeImg().then(res => {
         this.captchaOnOff = res.captchaOnOff === undefined ? true : res.captchaOnOff;
         if (this.captchaOnOff) {
@@ -130,7 +136,17 @@ export default {
       });
     },
 
-    getCookie() {
+    /** 访问第三方授权 */
+    handleAuthRender (source) {
+      console.log(1111111111111111111);
+      authRender(source).then(res => {
+        console.log(res);
+
+      });
+
+    },
+
+    getCookie () {
       const username = Cookies.get("username");
       const password = Cookies.get("password");
       const rememberMe = Cookies.get('rememberMe')
@@ -141,7 +157,7 @@ export default {
       };
     },
 
-    handleLogin() {
+    handleLogin () {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true;
@@ -155,7 +171,7 @@ export default {
             Cookies.remove('rememberMe');
           }
           this.$store.dispatch("Login", this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || "/" }).catch(()=>{});
+            this.$router.push({ path: this.redirect || "/" }).catch(() => { });
           }).catch(() => {
             this.loading = false;
             if (this.captchaOnOff) {
@@ -169,13 +185,14 @@ export default {
 };
 </script>
 
+
 <style rel="stylesheet/scss" lang="scss">
 .login {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
-  background-image: url("../assets/images/login-background.jpg");
+  background-image: url('../assets/images/login-background.jpg');
   background-size: cover;
 }
 .title {
@@ -229,5 +246,8 @@ export default {
 }
 .login-code-img {
   height: 38px;
+}
+.just-auth {
+  text-align: center;
 }
 </style>
