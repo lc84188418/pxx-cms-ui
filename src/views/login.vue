@@ -55,8 +55,9 @@
       <div class="just-auth">
         <span>其他登录方式</span>
         <el-row :data="justAuths">
-          <el-button icon="el-icon-search" circle @click="handleAuthRender('gitee')"></el-button>
-          <el-button icon="el-icon-search" circle @click="handleAuthRender('github')"></el-button>
+          <el-button icon="el-icon-search" circle @click="handleAuthRender('gitee')">示例</el-button>
+          <el-button circle @click="handleAuthRender(item.clientSign)" v-for="item,index in justAuths" :key="index">{{item.clientSign}}</el-button>
+          <svg-icon :icon-class="item.clientSign" @click="handleAuthRender(item.clientSign)" v-for="item,index in justAuths" :key="index"/>
         </el-row>
       </div>
     </el-form>
@@ -101,7 +102,7 @@ export default {
       // 注册开关
       register: false,
       redirect: undefined,
-      justAuths: null
+      justAuths: []
     };
   },
   watch: {
@@ -121,7 +122,7 @@ export default {
     /** 获取系统支持的第三方授权平台 */
     getJustAuth () {
       getJustAuth().then(res => {
-        justAuths = res.data;
+        this.justAuths = res.data;
 
       });
     },
@@ -138,10 +139,14 @@ export default {
 
     /** 访问第三方授权 */
     handleAuthRender (source) {
-      console.log(1111111111111111111);
+      console.log('访问第三方授权'+source);
       authRender(source).then(res => {
         console.log(res);
+        window.open(res).then(result => {
+        console.log('获取到授权信息'+result);
 
+        result.data;
+        })
       });
 
     },
