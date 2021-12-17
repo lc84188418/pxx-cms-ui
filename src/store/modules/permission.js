@@ -33,13 +33,18 @@ const permission = {
     },
   },
   actions: {
-    // 生成路由
+    //生成路由
     GenerateRoutes({ commit }) {
       return new Promise(resolve => {
         // 向后端请求路由数据
         getRouters().then(res => {
-          const sdata = JSON.parse(JSON.stringify(res.data))
-          const rdata = JSON.parse(JSON.stringify(res.data))
+          let data = res.data
+          const user = data.user
+          const roles = data.roles
+          const menus = data.menus
+
+          const sdata = JSON.parse(JSON.stringify(menus))
+          const rdata = JSON.parse(JSON.stringify(menus))
           const sidebarRoutes = filterAsyncRouter(sdata)
           const rewriteRoutes = filterAsyncRouter(rdata, false, true)
           rewriteRoutes.push({ path: '*', redirect: '/404', hidden: true })

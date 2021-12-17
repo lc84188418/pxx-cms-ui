@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
+//通过vue.user(插件)来安装插件
 Vue.use(Router)
 
 /* Layout */
@@ -28,6 +29,25 @@ import Layout from '@/layout'
 
 // 公共路由
 export const constantRoutes = [
+  {
+    path: '',
+    component: Layout,
+    redirect: 'index',
+    children: [
+      {
+        path: 'index',
+        component: (resolve) => require(['@/views/index'], resolve),
+        name: 'Index',
+        meta: { title: '首页145', icon: 'dashboard', affix: true }
+      },
+      {
+        path: 'test',
+        component: (resolve) => require(['@/views/index'], resolve),
+        name: 'test',
+        meta: { title: 'test', icon: 'dashboard', affix: true }
+      }
+    ]
+  },
   {
     path: '/redirect',
     component: Layout,
@@ -58,19 +78,6 @@ export const constantRoutes = [
     path: '/401',
     component: (resolve) => require(['@/views/error/401'], resolve),
     hidden: true
-  },
-  {
-    path: '',
-    component: Layout,
-    redirect: 'index',
-    children: [
-      {
-        path: 'index',
-        component: (resolve) => require(['@/views/index'], resolve),
-        name: 'Index',
-        meta: { title: '首页', icon: 'dashboard', affix: true }
-      }
-    ]
   },
   {
     path: '/user',
@@ -154,7 +161,8 @@ export const constantRoutes = [
 ]
 
 export default new Router({
-  mode: 'history', // 去掉url中的#
+  mode: 'history', // 去掉url中的#，他默认的是hash值，就带有#
   scrollBehavior: () => ({ y: 0 }),
+  //配置路由和组件之间的映射关系
   routes: constantRoutes
 })

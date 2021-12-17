@@ -49,10 +49,12 @@ export default {
     topMenus() {
       let topMenus = [];
       this.routers.map((menu) => {
-        if (menu.hidden !== true) {
+        console.log('顶部菜单');
+        console.log(menu);
+        if (menu.status === 1) {
           // 兼容顶部栏一级菜单内部跳转
           if (menu.path === "/") {
-              topMenus.push(menu.children[0]);
+              topMenus.push(menu.child[0]);
           } else {
               topMenus.push(menu);
           }
@@ -68,18 +70,18 @@ export default {
     childrenMenus() {
       var childrenMenus = [];
       this.routers.map((router) => {
-        for (var item in router.children) {
-          if (router.children[item].parentPath === undefined) {
+        for (var item in router.child) {
+          if (router.child[item].parentPath === undefined) {
             if(router.path === "/") {
-              router.children[item].path = "/redirect/" + router.children[item].path;
+              router.child[item].path = "/redirect/" + router.child[item].path;
             } else {
-              if(!this.ishttp(router.children[item].path)) {
-                router.children[item].path = router.path + "/" + router.children[item].path;
+              if(!this.ishttp(router.child[item].path)) {
+                router.child[item].path = router.path + "/" + router.child[item].path;
               }
             }
-            router.children[item].parentPath = router.path;
+            router.child[item].parentPath = router.path;
           }
-          childrenMenus.push(router.children[item]);
+          childrenMenus.push(router.child[item]);
         }
       });
       return constantRoutes.concat(childrenMenus);

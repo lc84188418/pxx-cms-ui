@@ -84,8 +84,7 @@ export default {
         username: "admin",
         password: "admin123",
         rememberMe: false,
-        code: "",
-        uuid: ""
+        code: ""
       },
       loginRules: {
         username: [
@@ -98,10 +97,12 @@ export default {
       },
       loading: false,
       // 验证码开关
-      captchaOnOff: true,
+      captchaOnOff: false,
       // 注册开关
       register: false,
       redirect: undefined,
+      //登录结果
+      loginResult:{},
       justAuths: []
     };
   },
@@ -132,7 +133,6 @@ export default {
         this.captchaOnOff = res.captchaOnOff === undefined ? true : res.captchaOnOff;
         if (this.captchaOnOff) {
           this.codeUrl = "data:image/gif;base64," + res.img;
-          this.loginForm.uuid = res.uuid;
         }
       });
     },
@@ -142,11 +142,34 @@ export default {
       console.log('访问第三方授权'+source);
       authRender(source).then(res => {
         console.log(res);
-        window.open(res).then(result => {
-        console.log('获取到授权信息'+result);
+        //window.open(res).then(result => {})
+        var width = width || 900;
+		    var height = height || 540;
+				var left = (window.screen.width - width) / 2;
+				var top = (window.screen.height - height) / 2;
+        var win = window.open(res, "_blank","toolbar=yes, location=yes, directories=no, status=no, menubar=yes, scrollbars=yes, resizable=no, copyhistory=yes, left=" + left + ", top=" + top + ", width=" + width + ", height=" + height);
+        console.log(win.closed);
 
-        result.data;
-        })
+		    //监听登录窗口是否关闭,登录成功后 后端返回关闭窗口的代码
+		    var listener = setInterval(function(){
+          //监听窗口是否关闭
+          if(win.closed){
+            //进入这个if代表后端验证成功!直接跳转路由
+            //关闭监听
+            console.log('关闭监听');
+            clearInterval(listener);
+            //跳转路由
+            this.$router.push('/')
+            // var path = this.$route.query.redirect;
+            // this.$router.replace({
+            //   path:
+            //   path === "/" || path === undefined ? "/admin/dashboard" : path
+            // });
+            // this.$router.go(0) //刷新
+          }
+			  },500)
+
+
       });
 
     },
@@ -163,6 +186,7 @@ export default {
     },
 
     handleLogin () {
+      console.log('handleLogin........................')
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true;
@@ -175,12 +199,13 @@ export default {
             Cookies.remove("password");
             Cookies.remove('rememberMe');
           }
+          //请求登录方法
           this.$store.dispatch("Login", this.loginForm).then(() => {
             this.$router.push({ path: this.redirect || "/" }).catch(() => { });
           }).catch(() => {
             this.loading = false;
             if (this.captchaOnOff) {
-              this.getCode();
+              // this.getCode();
             }
           });
         }
