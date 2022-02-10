@@ -8,7 +8,7 @@ git commit -m '提交代码'
 git push
 
 # 进入项目目录
-cd ruoyi-ui
+cd pxx-cms-ui
 
 # 安装依赖
 npm install

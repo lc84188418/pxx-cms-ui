@@ -8,10 +8,19 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <el-form-item label="区域名称" prop="areaName">
+      <el-form-item label="所属区域" prop="parentId">
         <el-input
-          v-model="queryParams.areaName"
-          placeholder="请输入区域名称"
+          v-model="queryParams.parentId"
+          placeholder="请输入区域编码"
+          clearable
+          size="small"
+          :disabled="!isParentLink"
+        />
+      </el-form-item>
+      <el-form-item label="街道名称" prop="streetName">
+        <el-input
+          v-model="queryParams.streetName"
+          placeholder="请输入街道名称"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
@@ -41,7 +50,7 @@
       <el-form-item label="状态" prop="status">
         <el-select
           v-model="queryParams.status"
-          placeholder="区域状态"
+          placeholder="街道状态"
           clearable
           size="small"
           style="width: 120px"
@@ -96,23 +105,23 @@
     <!-- 列表数据 -->
     <el-table
       v-loading="loading"
-      :data="areaList"
+      :data="streetList"
       :default-expand-all="isExpandAll"
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" align="center" width="50" />
       <el-table-column
-        label="区域编号"
+        label="街道编号"
         align="center"
-        key="pkAreaId"
-        prop="pkAreaId"
+        key="pkStreetId"
+        prop="pkStreetId"
         v-if="columns[0].visible"
       />
       <el-table-column
-        label="区域名称"
+        label="街道名称"
         align="center"
-        key="areaName"
-        prop="areaName"
+        key="streetName"
+        prop="streetName"
         v-if="columns[1].visible"
         :show-overflow-tooltip="true"
       />
@@ -124,10 +133,10 @@
         v-if="columns[2].visible"
       />
       <el-table-column
-        label="所属城市"
+        label="所属区域"
         align="center"
-        key="fkCityId"
-        prop="fkCityId"
+        key="fkAreaId"
+        prop="fkAreaId"
         v-if="columns[3].visible"
         :show-overflow-tooltip="true"
       />
@@ -138,9 +147,16 @@
         prop="youbian"
         v-if="columns[4].visible"
       />
-      <el-table-column label="首字母" align="center" key="szm" prop="szm" v-if="columns[5].visible" />
-      <el-table-column label="排序" align="center" key="sort" prop="sort" v-if="columns[6].visible" />
-      <el-table-column label="状态" align="center" v-if="columns[7].visible" width="100">
+      <el-table-column
+        label="电话区号"
+        align="center"
+        key="telAreaCode"
+        prop="telAreaCode"
+        v-if="columns[5].visible"
+      />
+      <el-table-column label="首字母" align="center" key="szm" prop="szm" v-if="columns[6].visible" />
+      <el-table-column label="排序" align="center" key="sort" prop="sort" v-if="columns[7].visible" />
+      <el-table-column label="状态" align="center" v-if="columns[8].visible" width="100">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
@@ -151,12 +167,12 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[8].visible">
+      <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[9].visible">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新时间" align="center" prop="updateTime" v-if="columns[9].visible">
+      <el-table-column label="更新时间" align="center" prop="updateTime" v-if="columns[10].visible">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
@@ -193,27 +209,30 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改区域对话框 -->
+    <!-- 添加或修改街道对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="所属城市" prop="fkCityId">
-          <el-select v-model="form.fkCityId" filterable placeholder="请选择">
+        <el-form-item label="所属区域" prop="fkAreaId">
+          <el-select v-model="form.fkAreaId" filterable placeholder="请选择">
             <el-option
-              v-for="item in cityList"
-              :key="item.pkCityId"
-              :label="item.cityName"
-              :value="item.pkCityId"
+              v-for="item in areaList"
+              :key="item.pkAreaId"
+              :label="item.areaName"
+              :value="item.pkAreaId"
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="区域名称" prop="areaName">
-          <el-input v-model="form.areaName" placeholder="请输入区域名称" />
+        <el-form-item label="街道名称" prop="streetName">
+          <el-input v-model="form.streetName" placeholder="请输入街道名称" />
         </el-form-item>
         <el-form-item label="区划代码" prop="zoningCode">
           <el-input v-model="form.zoningCode" placeholder="请输入区划代码" />
         </el-form-item>
         <el-form-item label="邮编" prop="youbian">
           <el-input v-model="form.youbian" placeholder="请输入邮编" />
+        </el-form-item>
+        <el-form-item label="电话区号" prop="telAreaCode">
+          <el-input v-model="form.telAreaCode" placeholder="请输入电话区号" />
         </el-form-item>
         <el-form-item label="排序" prop="sort">
           <el-input-number v-model="form.sort" controls-position="right" :min="1" />
@@ -234,11 +253,11 @@
 </template>
 
 <script>
-import { listArea, getArea, delArea, addArea, updateArea, changeAreaStatus } from "@/api/dictionary/xzqh/area";
-import { apiCitys } from "@/api/dictionary/xzqh/city";
+import { listStreet, getStreet, delStreet, addStreet, updateStreet, changeStreetStatus } from "@/api/dictionary/xzqh/street";
+import { apiAreas } from "@/api/dictionary/xzqh/area";
 
 export default {
-  name: "Area",
+  name: "Street",
   data () {
     return {
       // 遮罩层
@@ -253,10 +272,14 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 区域表格数据
+      //父级ID
+      parentId: this.$route.query.fkAreaId,
+      //是否是从上级跳转过来的,默认否
+      isParentLink: false,
+      // 街道表格数据
+      streetList: [],
+      // 区域列表数据
       areaList: [],
-      // 城市列表数据
-      cityList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -265,32 +288,30 @@ export default {
       queryParams: {
         current: 1,
         size: 10,
-        areaName: undefined,
         zoningCode: undefined,
+        streetName: undefined,
         status: undefined
       },
       // 列信息
       columns: [
-        { key: 0, label: `区域编号`, visible: true },
-        { key: 1, label: `区域名称`, visible: true },
+        { key: 0, label: `街道编号`, visible: true },
+        { key: 1, label: `街道名称`, visible: true },
         { key: 2, label: `区划代码`, visible: true },
-        { key: 3, label: `所属城市`, visible: true },
+        { key: 3, label: `所属区域`, visible: true },
         { key: 4, label: `邮编`, visible: true },
-        { key: 5, label: `首字母`, visible: true },
-        { key: 6, label: `排序`, visible: true },
-        { key: 7, label: `状态`, visible: true },
-        { key: 8, label: `创建时间`, visible: true },
-        { key: 9, label: `更新时间`, visible: true }
+        { key: 5, label: `电话区号`, visible: true },
+        { key: 6, label: `首字母`, visible: true },
+        { key: 7, label: `排序`, visible: true },
+        { key: 8, label: `状态`, visible: true },
+        { key: 9, label: `创建时间`, visible: true },
+        { key: 10, label: `更新时间`, visible: true }
       ],
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-        areaName: [
-          { required: true, message: "区域名称不能为空", trigger: "blur" }
-        ],
-        fkCityId: [
-          { required: false, message: "所属城市不能为空", trigger: "blur" }
+        streetName: [
+          { required: true, message: "街道名称不能为空", trigger: "blur" }
         ]
       }
     };
@@ -299,21 +320,20 @@ export default {
     this.getList();
   },
   methods: {
-
-    /** 查询区域列表 */
+    /** 查询街道列表 */
     getList () {
       this.loading = true;
-      listArea(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-        this.areaList = response.data.records;
+      listStreet(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+        this.streetList = response.data.records;
         this.total = response.data.total;
         this.loading = false;
       }
       );
     },
-    /** 查询城市列表 */
-    getCityList () {
-      apiCitys(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-        this.cityList = response.data;
+    /** 查询区域列表 */
+    getAreaList () {
+      apiAreas(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+        this.areaList = response.data;
       }
       );
     },
@@ -325,8 +345,7 @@ export default {
     // 表单重置
     reset () {
       this.form = {
-        fkCityId: undefined,
-        areaName: undefined,
+        streetName: undefined,
         zoningCode: undefined,
         youbian: undefined,
         sort: 0,
@@ -346,7 +365,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange (selection) {
-      this.ids = selection.map(item => item.pkAreaId)
+      this.ids = selection.map(item => item.pkStreetId)
       this.single = selection.length != 1
       this.multiple = !selection.length
     },
@@ -354,25 +373,25 @@ export default {
     handleAdd () {
       this.reset();
       this.open = true;
-      this.title = "添加区域";
-      //获取到所有城市的数据
-      this.getCityList();
+      this.title = "添加街道";
+      //获取到所有区域的数据
+      this.getAreaList();
     },
     /** 修改按钮操作 */
     handleUpdate (row) {
       this.reset();
-      const areaId = row.pkAreaId || this.ids
-      getArea(areaId).then(response => {
+      const streetId = row.pkStreetId || this.ids
+      getStreet(streetId).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改区域";
+        this.title = "修改街道";
       });
     },
-    // 区域状态修改
+    // 街道状态修改
     handleStatusChange (row) {
       let text = row.status === 0 ? "启用" : "停用";
-      this.$modal.confirm('确认要"' + text + '""' + row.areaName + '"区域吗？').then(function () {
-        return changeAreaStatus(row.pkAreaId, row.status);
+      this.$modal.confirm('确认要"' + text + '""' + row.streetName + '"街道吗？').then(function () {
+        return changeStreetStatus(row.pkStreetId, row.status);
       }).then(() => {
         this.$modal.msgSuccess(text + "成功");
       }).catch(function () {
@@ -383,14 +402,14 @@ export default {
     submitForm: function () {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.pkAreaId != undefined) {
-            updateArea(this.form).then(response => {
+          if (this.form.pkStreetId != undefined) {
+            updateStreet(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addArea(this.form).then(response => {
+            addStreet(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -401,9 +420,9 @@ export default {
     },
     /** 删除按钮操作，多选删除和单个删除 */
     handleDelete (row) {
-      const areaIds = row.pkAreaId || this.ids;
-      this.$modal.confirm('是否确认删除区域编号为"' + areaIds + '"的数据项？').then(function () {
-        return delArea(areaIds);
+      const streetIds = row.pkStreetId || this.ids;
+      this.$modal.confirm('是否确认删除街道编号为"' + streetIds + '"的数据项？').then(function () {
+        return delStreet(streetIds);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
@@ -412,18 +431,18 @@ export default {
 
     /** 查看下级按钮操作 */
     handleChildren (row) {
-      const areaId = row.pkAreaId
+      const streetId = row.pkStreetId
       this.$router.push({
-        path: '/dictionary/street',
+        path: '/dictionary/county',
         query: {
-          fkAreaId: areaId
+          fkStreetId: streetId
         }
       })
     },
 
     /** 导出按钮操作 */
     handleExport () {
-      this.download('dictionary/area/export', {
+      this.download('dictionary/street/export', {
         ...this.queryParams
       }, `post_${new Date().getTime()}.xlsx`)
     }

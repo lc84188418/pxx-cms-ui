@@ -11,9 +11,9 @@ export function listArea(query) {
 }
 
 // 查询区域详细
-export function getArea(provinceId) {
+export function getArea(areaId) {
   return request({
-    url: '/dictionary/area/' + praseStrEmpty(provinceId),
+    url: '/dictionary/area/' + praseStrEmpty(areaId),
     method: 'get'
   })
 }
