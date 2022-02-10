@@ -8,9 +8,13 @@
       v-show="showSearch"
       label-width="68px"
     >
+      <!-- 用query获取值 -->
+      <p>提示：{{this.$route.query.fkAreaId}}</p>
+      <p>提示2：{{parentId}}</p>
       <el-form-item label="所属区域" prop="parentId">
         <el-input
-          v-model="queryParams.parentId"
+          v-model="queryParams.fkAreaId"
+          value="this.$route.query.fkAreaId"
           placeholder="请输入区域编码"
           clearable
           size="small"
@@ -103,12 +107,7 @@
     </el-row>
 
     <!-- 列表数据 -->
-    <el-table
-      v-loading="loading"
-      :data="streetList"
-      :default-expand-all="isExpandAll"
-      @selection-change="handleSelectionChange"
-    >
+    <el-table v-loading="loading" :data="streetList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" align="center" width="50" />
       <el-table-column
         label="街道编号"
@@ -156,7 +155,17 @@
       />
       <el-table-column label="首字母" align="center" key="szm" prop="szm" v-if="columns[6].visible" />
       <el-table-column label="排序" align="center" key="sort" prop="sort" v-if="columns[7].visible" />
-      <el-table-column label="状态" align="center" v-if="columns[8].visible" width="100">
+      <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[8].visible">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.createTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="更新时间" align="center" prop="updateTime" v-if="columns[9].visible">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.updateTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="状态" align="center" v-if="columns[10].visible" width="100">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
@@ -164,17 +173,6 @@
             :inactive-value="0"
             @change="handleStatusChange(scope.row)"
           ></el-switch>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[9].visible">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="更新时间" align="center" prop="updateTime" v-if="columns[10].visible">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
       </el-table-column>
       <!-- 操作栏 -->
@@ -273,7 +271,7 @@ export default {
       // 总条数
       total: 0,
       //父级ID
-      parentId: this.$route.query.fkAreaId,
+      parentId: undefined,
       //是否是从上级跳转过来的,默认否
       isParentLink: false,
       // 街道表格数据
@@ -302,9 +300,9 @@ export default {
         { key: 5, label: `电话区号`, visible: true },
         { key: 6, label: `首字母`, visible: true },
         { key: 7, label: `排序`, visible: true },
-        { key: 8, label: `状态`, visible: true },
-        { key: 9, label: `创建时间`, visible: true },
-        { key: 10, label: `更新时间`, visible: true }
+        { key: 8, label: `创建时间`, visible: true },
+        { key: 9, label: `更新时间`, visible: true },
+        { key: 10, label: `状态`, visible: true },
       ],
       // 表单参数
       form: {},
@@ -318,7 +316,15 @@ export default {
   },
   created () {
     this.getList();
+    // this.parentId = this.$router.query.fkAreaId
+    // console.log(this.parentId);
   },
+  // components: {
+  //   parentId: this.$router.query.fkAreaId
+  // },
+  // computed: {
+  //   parentId: this.$router.query.fkAreaId
+  // },
   methods: {
     /** 查询街道列表 */
     getList () {
@@ -377,6 +383,8 @@ export default {
       //获取到所有区域的数据
       this.getAreaList();
     },
+
+
     /** 修改按钮操作 */
     handleUpdate (row) {
       this.reset();
@@ -439,12 +447,22 @@ export default {
         }
       })
     },
-
+    /** 导入按钮操作 */
+    handleImport () {
+      this.upload.title = "街道导入";
+      this.upload.open = true;
+    },
     /** 导出按钮操作 */
     handleExport () {
       this.download('dictionary/street/export', {
         ...this.queryParams
       }, `post_${new Date().getTime()}.xlsx`)
+    },
+    /** 同步按钮操作 同步后台数据库中使用python从统计局爬取到的数据*/
+    syncData () {
+      syncStreetData(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+      }
+      );
     }
   }
 };

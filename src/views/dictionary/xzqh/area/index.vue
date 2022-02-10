@@ -94,12 +94,7 @@
     </el-row>
 
     <!-- 列表数据 -->
-    <el-table
-      v-loading="loading"
-      :data="areaList"
-      :default-expand-all="isExpandAll"
-      @selection-change="handleSelectionChange"
-    >
+    <el-table v-loading="loading" :data="areaList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" align="center" width="50" />
       <el-table-column
         label="区域编号"
@@ -140,7 +135,17 @@
       />
       <el-table-column label="首字母" align="center" key="szm" prop="szm" v-if="columns[5].visible" />
       <el-table-column label="排序" align="center" key="sort" prop="sort" v-if="columns[6].visible" />
-      <el-table-column label="状态" align="center" v-if="columns[7].visible" width="100">
+      <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[7].visible">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.createTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="更新时间" align="center" prop="updateTime" v-if="columns[8].visible">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.updateTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="状态" align="center" v-if="columns[9].visible" width="100">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
@@ -148,17 +153,6 @@
             :inactive-value="0"
             @change="handleStatusChange(scope.row)"
           ></el-switch>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[8].visible">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="更新时间" align="center" prop="updateTime" v-if="columns[9].visible">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
       </el-table-column>
       <!-- 操作栏 -->
@@ -278,9 +272,9 @@ export default {
         { key: 4, label: `邮编`, visible: true },
         { key: 5, label: `首字母`, visible: true },
         { key: 6, label: `排序`, visible: true },
-        { key: 7, label: `状态`, visible: true },
-        { key: 8, label: `创建时间`, visible: true },
-        { key: 9, label: `更新时间`, visible: true }
+        { key: 7, label: `创建时间`, visible: true },
+        { key: 8, label: `更新时间`, visible: true },
+        { key: 9, label: `状态`, visible: true }
       ],
       // 表单参数
       form: {},
@@ -421,11 +415,22 @@ export default {
       })
     },
 
+    /** 导入按钮操作 */
+    handleImport () {
+      this.upload.title = "区域导入";
+      this.upload.open = true;
+    },
     /** 导出按钮操作 */
     handleExport () {
       this.download('dictionary/area/export', {
         ...this.queryParams
       }, `post_${new Date().getTime()}.xlsx`)
+    },
+    /** 同步按钮操作 同步后台数据库中使用python从统计局爬取到的数据*/
+    syncData () {
+      syncAreaData(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+      }
+      );
     }
   }
 };
