@@ -11,9 +11,9 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="字典标签" prop="dictLabel">
+      <el-form-item label="字典标签" prop="metaLabel">
         <el-input
-          v-model="queryParams.dictLabel"
+          v-model="queryParams.metaLabel"
           placeholder="请输入字典标签"
           clearable
           size="small"
@@ -94,10 +94,10 @@
     <el-table v-loading="loading" :data="dataList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="字典编码" align="center" prop="dictCode" />
-      <el-table-column label="字典标签" align="center" prop="dictLabel">
+      <el-table-column label="字典标签" align="center" prop="metaLabel">
         <template slot-scope="scope">
-          <span v-if="scope.row.listClass == '' || scope.row.listClass == 'default'">{{scope.row.dictLabel}}</span>
-          <el-tag v-else :type="scope.row.listClass == 'primary' ? '' : scope.row.listClass">{{scope.row.dictLabel}}</el-tag>
+          <span v-if="scope.row.listClass == '' || scope.row.listClass == 'default'">{{scope.row.metaLabel}}</span>
+          <el-tag v-else :type="scope.row.listClass == 'primary' ? '' : scope.row.listClass">{{scope.row.metaLabel}}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="字典键值" align="center" prop="dictValue" />
@@ -147,8 +147,8 @@
         <el-form-item label="字典类型">
           <el-input v-model="form.dictType" :disabled="true" />
         </el-form-item>
-        <el-form-item label="数据标签" prop="dictLabel">
-          <el-input v-model="form.dictLabel" placeholder="请输入数据标签" />
+        <el-form-item label="数据标签" prop="metaLabel">
+          <el-input v-model="form.metaLabel" placeholder="请输入数据标签" />
         </el-form-item>
         <el-form-item label="数据键值" prop="dictValue">
           <el-input v-model="form.dictValue" placeholder="请输入数据键值" />
@@ -260,7 +260,7 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        dictLabel: [
+        metaLabel: [
           { required: true, message: "数据标签不能为空", trigger: "blur" }
         ],
         dictValue: [
@@ -310,7 +310,7 @@ export default {
     reset() {
       this.form = {
         dictCode: undefined,
-        dictLabel: undefined,
+        metaLabel: undefined,
         dictValue: undefined,
         cssClass: undefined,
         listClass: 'default',

@@ -269,7 +269,7 @@ export default {
         delete node.children;
       }
       return {
-        id: node.menuId,
+        id: node.pkMenuId,
         label: node.menuName,
         children: node.children
       };

@@ -6,7 +6,7 @@ function install() {
   Vue.use(DataDict, {
     metas: {
       '*': {
-        labelField: 'dictLabel',
+        labelField: 'metaLabel',
         valueField: 'dictValue',
         request(dictMeta) {
           return getDicts(dictMeta.type).then(res => res.data)

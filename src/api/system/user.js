@@ -4,7 +4,7 @@ import { praseStrEmpty } from "@/utils/ruoyi";
 // 查询用户列表
 export function listUser(query) {
   return request({
-    url: '/system/user/list',
+    url: '/system/user',
     method: 'get',
     params: query
   })
@@ -36,7 +36,7 @@ export function updateUser(data) {
   })
 }
 
-// 删除用户
+//删除用户
 export function delUser(userId) {
   return request({
     url: '/system/user/' + userId,
@@ -58,13 +58,13 @@ export function resetUserPwd(userId, password) {
 }
 
 // 用户状态修改
-export function changeUserStatus(userId, status) {
+export function changeUserStatus(pkUserId, status) {
   const data = {
-    userId,
+    pkUserId,
     status
   }
   return request({
-    url: '/system/user/changeStatus',
+    url: '/system/user',
     method: 'put',
     data: data
   })

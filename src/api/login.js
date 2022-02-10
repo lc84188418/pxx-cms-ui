@@ -66,7 +66,8 @@ export function getCodeImg() {
 // 获取第三方授权
 export function getJustAuth() {
   return request({
-    url: '/justAuth/support',
+    url: '/auth/support',
+    // url: '/system/justAuth',
     headers: {
       isToken: false
     },
@@ -78,7 +79,7 @@ export function getJustAuth() {
 // 访问第三方授权
 export function authRender(source) {
   return request({
-    url: '/justAuth/render/'+source,
+    url: '/auth/render/'+source,
     headers: {
       isToken: false
     },

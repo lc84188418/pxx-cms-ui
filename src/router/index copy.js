@@ -55,55 +55,6 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '',
-    component: Layout,
-    redirect: 'system',
-    children: [
-      {
-        path: 'system/user',
-        component: (resolve) => require(['@/views/system/user'], resolve),
-        name: 'user',
-        meta: { title: '用户管理', icon: 'dashboard', affix: true }
-      },
-      {
-        path: 'system/role',
-        component: (resolve) => require(['@/views/system/role'], resolve),
-        name: 'role',
-        meta: { title: '角色管理', icon: 'dashboard', affix: true }
-      },
-      {
-        path: 'system/dept',
-        component: (resolve) => require(['@/views/system/dept'], resolve),
-        name: 'dept',
-        meta: { title: '部门管理', icon: 'dashboard', affix: true }
-      },
-      {
-        path: 'system/menu',
-        component: (resolve) => require(['@/views/system/menu'], resolve),
-        name: 'menu',
-        meta: { title: '权限管理', icon: 'dashboard', affix: true }
-      },
-      {
-        path: 'dictionary/province',
-        component: (resolve) => require(['@/views/dictionary/xzqh/province'], resolve),
-        name: 'province',
-        meta: { title: '省份管理', icon: 'dashboard', affix: true }
-      },
-      {
-        path: 'dictionary/city',
-        component: (resolve) => require(['@/views/dictionary/xzqh/city'], resolve),
-        name: 'city',
-        meta: { title: '城市管理', icon: 'dashboard', affix: true }
-      },
-      {
-        path: 'dictionary/area',
-        component: (resolve) => require(['@/views/dictionary/xzqh/area'], resolve),
-        name: 'area',
-        meta: { title: '区域管理', icon: 'dashboard', affix: true }
-      }
-    ]
-  },
-  {
     path: '/redirect',
     component: Layout,
     hidden: true,

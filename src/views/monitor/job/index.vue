@@ -366,7 +366,7 @@ export default {
     },
     // 任务组名字典翻译
     jobGroupFormat(row, column) {
-      return this.selectDictLabel(this.dict.type.sys_job_group, row.jobGroup);
+      return this.selectMetaLabel(this.dict.type.sys_job_group, row.jobGroup);
     },
     // 取消按钮
     cancel() {

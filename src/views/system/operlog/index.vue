@@ -248,7 +248,7 @@ export default {
     },
     // 操作日志类型字典翻译
     typeFormat(row, column) {
-      return this.selectDictLabel(this.dict.type.sys_oper_type, row.businessType);
+      return this.selectMetaLabel(this.dict.type.sys_oper_type, row.businessType);
     },
     /** 搜索按钮操作 */
     handleQuery() {

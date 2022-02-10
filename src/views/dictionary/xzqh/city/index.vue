@@ -1,47 +1,25 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
-      <!--部门数据-->
-      <el-col :span="4" :xs="24">
-        <div class="head-container">
-          <el-input
-            v-model="deptName"
-            placeholder="请输入部门名称"
-            clearable
-            size="small"
-            prefix-icon="el-icon-search"
-            style="margin-bottom: 20px"
-          />
-        </div>
-        <div class="head-container">
-          <el-tree
-            :data="deptOptions"
-            :props="defaultProps"
-            :expand-on-click-node="false"
-            :filter-node-method="filterNode"
-            ref="tree"
-            default-expand-all
-            @node-click="handleNodeClick"
-          />
-        </div>
-      </el-col>
-      <!--用户数据-->
+
+      <!--城市数据-->
       <el-col :span="20" :xs="24">
+        <!-- 搜索栏 -->
         <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
-          <el-form-item label="用户名称" prop="userName">
+          <el-form-item label="城市名称" prop="cityName">
             <el-input
-              v-model="queryParams.userName"
-              placeholder="请输入用户名称"
+              v-model="queryParams.cityName"
+              placeholder="请输入城市名称"
               clearable
               size="small"
               style="width: 240px"
               @keyup.enter.native="handleQuery"
             />
           </el-form-item>
-          <el-form-item label="手机号码" prop="phone">
+          <el-form-item label="区划代码" prop="zoningCode">
             <el-input
-              v-model="queryParams.phone"
-              placeholder="请输入手机号码"
+              v-model="queryParams.zoningCode"
+              placeholder="请输入区划代码"
               clearable
               size="small"
               style="width: 240px"
@@ -51,39 +29,27 @@
           <el-form-item label="状态" prop="status">
             <el-select
               v-model="queryParams.status"
-              placeholder="用户状态"
+              placeholder="城市状态"
               clearable
               size="small"
               style="width: 240px"
             >
               <el-option
-                label="启用"
-                value="1"
-              />
-              <el-option
-                label="停用"
-                value="0"
+                v-for="item in dict.type.sys_normal_disable"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="创建时间">
-            <el-date-picker
-              v-model="dateRange"
-              size="small"
-              style="width: 240px"
-              value-format="yyyy-MM-dd"
-              type="daterange"
-              range-separator="-"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-            ></el-date-picker>
-          </el-form-item>
+
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
             <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
           </el-form-item>
         </el-form>
 
+        <!-- 搜索栏下方，菜单按钮栏 -->
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
             <el-button
@@ -132,21 +98,31 @@
               @click="handleExport"
             >导出</el-button>
           </el-col>
+          <el-col :span="1.5">
+            <el-button
+              type="info"
+              plain
+              icon="el-icon-upload2"
+              size="mini"
+              @click="syncData"
+            >同步</el-button>
+          </el-col>
           <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
         </el-row>
 
-        <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
+        <el-table v-loading="loading" :data="cityList" @selection-change="handleSelectionChange">
           <el-table-column type="selection" align="center" width="50" />
-          <el-table-column label="用户编号" align="center" key="pkUserId" prop="pkUserId" v-if="columns[0].visible" />
-          <el-table-column label="用户名称" align="center" key="userName" prop="userName" v-if="columns[1].visible" :show-overflow-tooltip="true" />
-          <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
-          <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" v-if="columns[3].visible" :show-overflow-tooltip="true" />
-          <el-table-column label="手机号码" align="center" key="phone" prop="phone" v-if="columns[4].visible"/>
-          <el-table-column label="邮箱" align="center" key="email" prop="email" v-if="columns[5].visible"/>
-          <el-table-column label="性别" align="center" key="sex" prop="sex" v-if="columns[6].visible"/>
-          <el-table-column label="状态" align="center" v-if="columns[7].visible" width="100">
+          <el-table-column label="城市编号" align="center" key="pkCityId" prop="pkCityId" v-if="columns[0].visible"/>
+          <el-table-column label="城市名称" align="center" key="cityName" prop="cityName" v-if="columns[1].visible"/>
+          <el-table-column label="城市中文拼音" align="center" key="pinyin" prop="pinyin" v-if="columns[2].visible"/>
+          <el-table-column label="首字母" align="center" key="szm" prop="szm" v-if="columns[3].visible"/>
+          <el-table-column label="区划代码" align="center" key="zoningCode" prop="zoningCode" v-if="columns[4].visible"/>
+          <el-table-column label="所属省份" align="center" key="fkProvinceId" prop="fkProvinceId" v-if="columns[5].visible"/>
+          <el-table-column label="邮编" align="center" key="youbian" prop="youbian" v-if="columns[6].visible"/>
+          <el-table-column label="电话区号" align="center" key="telAreaCode" prop="telAreaCode" v-if="columns[7].visible"/>
+          <el-table-column label="排序" align="center" key="sort" prop="sort" v-if="columns[8].visible"/>
+          <el-table-column label="状态" align="center" key="status" v-if="columns[9].visible" width="100">
             <template slot-scope="scope">
-              {{scope.row.status}}
               <el-switch
                 v-model="scope.row.status"
                 active-value="1"
@@ -156,10 +132,14 @@
             </template>
           </el-table-column>
 
-          <el-table-column label="最后登录ip" align="center" key="loginIp" prop="loginIp" v-if="columns[8].visible" width="120"/>
-          <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[9].visible">
+          <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[10].visible">
             <template slot-scope="scope">
-              <span>{{ parseTime(scope.row.createTime)}}</span>
+              <span>{{ parseTime(scope.row.createTime) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="更新时间" align="center" prop="updateTime" v-if="columns[11].visible">
+            <template slot-scope="scope">
+              <span>{{ parseTime(scope.row.updateTime) }}</span>
             </template>
           </el-table-column>
           <el-table-column
@@ -182,15 +162,6 @@
                 icon="el-icon-delete"
                 @click="handleDelete(scope.row)"
               >删除</el-button>
-              <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)">
-                <span class="el-dropdown-link">
-                  <i class="el-icon-d-arrow-right el-icon--right"></i>更多
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="handleResetPwd" icon="el-icon-key">重置密码</el-dropdown-item>
-                  <el-dropdown-item command="handleAuthRole" icon="el-icon-circle-check">分配角色</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
             </template>
           </el-table-column>
         </el-table>
@@ -198,32 +169,32 @@
         <pagination
           v-show="total>0"
           :total="total"
-          :page.sync="queryParams.pageNum"
-          :limit.sync="queryParams.pageSize"
+          :page.sync="queryParams.current"
+          :limit.sync="queryParams.size"
           @pagination="getList"
         />
       </el-col>
     </el-row>
 
-    <!-- 添加或修改用户配置对话框 -->
+    <!-- 添加或修改城市配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="用户昵称" prop="nickName">
-              <el-input v-model="form.nickName" placeholder="请输入用户昵称" maxlength="30" />
+            <el-form-item label="城市名称" prop="cityName">
+              <el-input v-model="form.cityName" placeholder="请输入城市名称" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="归属部门" prop="deptId">
-              <treeselect v-model="form.pkDeptId" :options="deptOptions" :show-count="true" placeholder="请选择归属部门" />
+            <el-form-item label="区划代码" prop="zoningCode">
+              <treeselect v-model="form.zoningCode" placeholder="请输入区划代码" maxlength="12"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="手机号码" prop="phone">
-              <el-input v-model="form.phone" placeholder="请输入手机号码" maxlength="11" />
+            <el-form-item label="简称" prop="abbreviation">
+              <el-input v-model="form.abbreviation" placeholder="请输入简称"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -234,19 +205,19 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item v-if="form.pkUserId == undefined" label="用户名称" prop="userName">
-              <el-input v-model="form.userName" placeholder="请输入用户名称" maxlength="30" />
+            <el-form-item v-if="form.pkUserId == undefined" label="城市名称" prop="userName">
+              <el-input v-model="form.userName" placeholder="请输入城市名称" maxlength="30" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item v-if="form.pkUserId == undefined" label="用户密码" prop="password">
-              <el-input v-model="form.password" placeholder="请输入用户密码" type="password" maxlength="20" show-password/>
+            <el-form-item v-if="form.pkUserId == undefined" label="城市密码" prop="password">
+              <el-input v-model="form.password" placeholder="请输入城市密码" type="password" maxlength="20" show-password/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="用户性别">
+            <el-form-item label="城市性别">
               <el-select v-model="form.sex" placeholder="请选择">
                 <el-option
                   v-for="item in dict.type.sys_user_sex"
@@ -311,7 +282,7 @@
       </div>
     </el-dialog>
 
-    <!-- 用户导入对话框 -->
+    <!-- 城市导入对话框 -->
     <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
       <el-upload
         ref="upload"
@@ -329,7 +300,7 @@
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <div class="el-upload__tip text-center" slot="tip">
           <div class="el-upload__tip" slot="tip">
-            <el-checkbox v-model="upload.updateSupport" /> 是否更新已经存在的用户数据
+            <el-checkbox v-model="upload.updateSupport" /> 是否更新已经存在的城市数据
           </div>
           <span>仅允许导入xls、xlsx格式文件。</span>
           <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;" @click="importTemplate">下载模板</el-link>
@@ -344,14 +315,14 @@
 </template>
 
 <script>
-import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUserStatus } from "@/api/system/user";
+import { listCity, getCity, delCity, addCity, updateCity, changeCityStatus } from "@/api/dictionary/xzqh/city";
 import { getToken } from "@/utils/auth";
 import { treeselect } from "@/api/system/dept";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
-  name: "User",
+  name: "City",
   dicts: ['sys_normal_disable', 'sys_user_sex'],
   components: { Treeselect },
   data() {
@@ -368,8 +339,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 用户表格数据
-      userList: null,
+      // 城市表格数据
+      cityList: null,
       // 弹出层标题
       title: "",
       // 部门树选项
@@ -390,25 +361,25 @@ export default {
         children: "child",
         label: "deptName"
       },
-      // 用户导入参数
+      // 城市导入参数
       upload: {
-        // 是否显示弹出层（用户导入）
+        // 是否显示弹出层（城市导入）
         open: false,
-        // 弹出层标题（用户导入）
+        // 弹出层标题（城市导入）
         title: "",
         // 是否禁用上传
         isUploading: false,
-        // 是否更新已经存在的用户数据
+        // 是否更新已经存在的城市数据
         updateSupport: 0,
         // 设置上传的请求头部
         headers: { Authorization: getToken() },
         // 上传的地址
-        url: process.env.VUE_APP_BASE_API + "/system/user/importData"
+        url: process.env.VUE_APP_BASE_API + "/dictionary/city/importData"
       },
       // 查询参数
       queryParams: {
-        pageNum: 1,
-        pageSize: 10,
+        current: 1,
+        size: 10,
         userName: undefined,
         phone: undefined,
         status: undefined,
@@ -416,29 +387,31 @@ export default {
       },
       // 列信息
       columns: [
-        { key: 0, label: `用户编号`, visible: true },
-        { key: 1, label: `用户名称`, visible: true },
-        { key: 2, label: `用户昵称`, visible: true },
-        { key: 3, label: `部门`, visible: true },
-        { key: 4, label: `手机号码`, visible: true },
-        { key: 5, label: `邮箱`, visible: true },
-        { key: 6, label: `性别`, visible: true },
-        { key: 7, label: `状态`, visible: true },
-        { key: 8, label: `最后登录ip`, visible: true },
-        { key: 9, label: `创建时间`, visible: true }
+        { key: 0, label: `城市编号`, visible: true },
+        { key: 1, label: `城市名称`, visible: true },
+        { key: 2, label: `城市中文拼音`, visible: true },
+        { key: 3, label: `首字母`, visible: true },
+        { key: 4, label: `区划代码`, visible: true },
+        { key: 5, label: `所属省份`, visible: true },
+        { key: 6, label: `邮编`, visible: true },
+        { key: 7, label: `电话区号`, visible: true },
+        { key: 8, label: `排序`, visible: true },
+        { key: 9, label: `状态`, visible: true },
+        { key: 10, label: `创建时间`, visible: true },
+        { key: 11, label: `更新时间`, visible: true }
       ],
       // 表单校验
       rules: {
         userName: [
-          { required: true, message: "用户名称不能为空", trigger: "blur" },
-          { min: 2, max: 20, message: '用户名称长度必须介于 2 和 20 之间', trigger: 'blur' }
+          { required: true, message: "城市名称不能为空", trigger: "blur" },
+          { min: 2, max: 20, message: '城市名称长度必须介于 2 和 20 之间', trigger: 'blur' }
         ],
         nickName: [
-          { required: true, message: "用户昵称不能为空", trigger: "blur" }
+          { required: true, message: "城市昵称不能为空", trigger: "blur" }
         ],
         password: [
-          { required: true, message: "用户密码不能为空", trigger: "blur" },
-          { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' }
+          { required: true, message: "城市密码不能为空", trigger: "blur" },
+          { min: 5, max: 20, message: '城市密码长度必须介于 5 和 20 之间', trigger: 'blur' }
         ],
         email: [
           {
@@ -468,11 +441,11 @@ export default {
     this.getTreeselect();
   },
   methods: {
-    /** 查询用户列表 */
+    /** 查询城市列表 */
     getList() {
       this.loading = true;
-      listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-          this.userList = response.data.records;
+      listCity(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+          this.cityList = response.data.records;
           this.total = response.data.total;
           this.loading = false;
         }
@@ -494,10 +467,10 @@ export default {
       this.queryParams.deptId = data.pkDeptId;
       this.getList();
     },
-    // 用户状态修改
+    // 城市状态修改
     handleStatusChange(row) {
       let text = row.status === 0 ? "启用" : "停用";
-      this.$modal.confirm('确认要"' + text + '""' + row.userName + '"用户吗？').then(function() {
+      this.$modal.confirm('确认要"' + text + '""' + row.userName + '"城市吗？').then(function() {
         return changeUserStatus(row.pkUserId, row.status);
       }).then(() => {
         this.$modal.msgSuccess(text + "成功");
@@ -530,7 +503,7 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1;
+      this.queryParams.current = 1;
       this.getList();
     },
     /** 重置按钮操作 */
@@ -566,7 +539,7 @@ export default {
         this.postOptions = response.posts;
         this.roleOptions = response.roles;
         this.open = true;
-        this.title = "添加用户";
+        this.title = "添加城市";
       });
     },
     /** 修改按钮操作 */
@@ -581,7 +554,7 @@ export default {
         this.form.postIds = response.postIds;
         this.form.roleIds = response.roleIds;
         this.open = true;
-        this.title = "修改用户";
+        this.title = "修改城市";
         this.form.password = "";
       });
     },
@@ -592,7 +565,7 @@ export default {
         cancelButtonText: "取消",
         closeOnClickModal: false,
         inputPattern: /^.{5,20}$/,
-        inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
+        inputErrorMessage: "城市密码长度必须介于 5 和 20 之间",
       }).then(({ value }) => {
           resetUserPwd(row.pkUserId, value).then(response => {
             this.$modal.msgSuccess("修改成功，新密码是：" + value);
@@ -602,7 +575,7 @@ export default {
     /** 分配角色操作 */
     handleAuthRole: function(row) {
       const pkUserId = row.pkUserId;
-      this.$router.push("/system/user-auth/role/" + pkUserId);
+      this.$router.push("/dictionary/city-auth/role/" + pkUserId);
     },
     /** 提交按钮 */
     submitForm: function() {
@@ -627,7 +600,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const userIds = row.pkUserId || this.ids;
-      this.$modal.confirm('是否确认删除用户编号为"' + userIds + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除城市编号为"' + userIds + '"的数据项？').then(function() {
         return delUser(userIds);
       }).then(() => {
         this.getList();
@@ -636,18 +609,18 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('system/user/export', {
+      this.download('dictionary/city/export', {
         ...this.queryParams
       }, `user_${new Date().getTime()}.xlsx`)
     },
     /** 导入按钮操作 */
     handleImport() {
-      this.upload.title = "用户导入";
+      this.upload.title = "城市导入";
       this.upload.open = true;
     },
     /** 下载模板操作 */
     importTemplate() {
-      this.download('system/user/importTemplate', {
+      this.download('dictionary/city/importTemplate', {
       }, `user_template_${new Date().getTime()}.xlsx`)
     },
     // 文件上传中处理
