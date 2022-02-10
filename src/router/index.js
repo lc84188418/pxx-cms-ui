@@ -106,6 +106,12 @@ export const constantRoutes = [
         component: (resolve) => require(['@/views/dictionary/xzqh/street'], resolve),
         name: 'street',
         meta: { title: '街道管理', icon: 'dashboard', affix: true }
+      },
+      {
+        path: 'dictionary/county',
+        component: (resolve) => require(['@/views/dictionary/xzqh/county'], resolve),
+        name: 'county',
+        meta: { title: '乡镇管理', icon: 'dashboard', affix: true }
       }
     ]
   },
