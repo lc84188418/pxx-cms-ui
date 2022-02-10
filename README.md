@@ -3,9 +3,14 @@
 ```bash
 # 克隆项目
 git clone git@github.com:lc84188418/pxx-cms-ui.git
+
+# 提交代码
 git add .
 git commit -m '提交代码'
 git push
+
+# 拉代码
+git pull
 
 # 进入项目目录
 cd pxx-cms-ui
