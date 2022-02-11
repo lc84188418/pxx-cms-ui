@@ -1,365 +1,235 @@
 <template>
   <div class="app-container">
-    <el-row :gutter="20">
-      <!--省份数据-->
-      <el-col :span="20" :xs="24">
-        <el-form
-          :model="queryParams"
-          ref="queryForm"
-          :inline="true"
-          v-show="showSearch"
-          label-width="68px"
-        >
-          <el-form-item label="省份名称" prop="provinceName">
-            <el-input
-              v-model="queryParams.provinceName"
-              placeholder="请输入省份名称"
-              clearable
-              size="small"
-              style="width: 240px"
-              @keyup.enter.native="handleQuery"
-            />
-          </el-form-item>
-          <el-form-item label="区划代码" prop="zoningCode">
-            <el-input
-              v-model="queryParams.zoningCode"
-              placeholder="请输入区划代码"
-              clearable
-              size="small"
-              style="width: 240px"
-              @keyup.enter.native="handleQuery"
-            />
-          </el-form-item>
-          <el-form-item label="状态" prop="status">
-            <el-select
-              v-model="queryParams.status"
-              placeholder="省份状态"
-              clearable
-              size="small"
-              style="width: 240px"
-            >
-              <el-option
-                v-for="item in dict.type.sys_normal_disable"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-
-          <el-form-item>
-            <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-            <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-          </el-form-item>
-        </el-form>
-
-        <el-row :gutter="10" class="mb8">
-          <el-col :span="1.5">
-            <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              type="success"
-              plain
-              icon="el-icon-edit"
-              size="mini"
-              :disabled="single"
-              @click="handleUpdate"
-            >修改</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              type="danger"
-              plain
-              icon="el-icon-delete"
-              size="mini"
-              :disabled="multiple"
-              @click="handleDelete"
-            >删除</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button type="info" plain icon="el-icon-upload2" size="mini" @click="handleImport">导入</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              type="warning"
-              plain
-              icon="el-icon-download"
-              size="mini"
-              @click="handleExport"
-            >导出</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button type="info" plain icon="el-icon-upload2" size="mini" @click="syncData">同步</el-button>
-          </el-col>
-          <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
-        </el-row>
-
-        <el-table
-          v-loading="loading"
-          :data="provinceList"
-          :default-expand-all="isExpandAll"
-          @selection-change="handleSelectionChange"
-        >
-          <el-table-column type="selection" align="center" width="50" />
-          <el-table-column
-            label="省份编号"
-            align="center"
-            key="pkProvinceId"
-            prop="pkProvinceId"
-            v-if="columns[0].visible"
-          />
-          <el-table-column
-            label="省份名称"
-            align="center"
-            key="provinceName"
-            prop="provinceName"
-            v-if="columns[1].visible"
-            :show-overflow-tooltip="true"
-          />
-          <el-table-column
-            label="区划代码"
-            align="center"
-            key="zoningCode"
-            prop="zoningCode"
-            v-if="columns[2].visible"
-          />
-          <el-table-column
-            label="简称"
-            align="center"
-            key="abbreviation"
-            prop="abbreviation"
-            v-if="columns[3].visible"
-            :show-overflow-tooltip="true"
-          />
-          <el-table-column
-            label="省会"
-            align="center"
-            key="provinceCapital"
-            prop="provinceCapital"
-            v-if="columns[4].visible"
-          />
-          <el-table-column
-            label="首字母"
-            align="center"
-            key="szm"
-            prop="szm"
-            v-if="columns[5].visible"
-          />
-          <el-table-column
-            label="排序"
-            align="center"
-            key="sort"
-            prop="sort"
-            v-if="columns[6].visible"
-          />
-          <el-table-column
-            label="状态"
-            align="center"
-            key="status"
-            v-if="columns[7].visible"
-            width="100"
-          >
-            <template slot-scope="scope">
-              <el-switch
-                v-model="scope.row.status"
-                active-value="1"
-                inactive-value="0"
-                @change="handleStatusChange(scope.row)"
-              ></el-switch>
-            </template>
-          </el-table-column>
-
-          <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[8].visible">
-            <template slot-scope="scope">
-              <span>{{ parseTime(scope.row.createTime) }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="更新时间" align="center" prop="updateTime" v-if="columns[9].visible">
-            <template slot-scope="scope">
-              <span>{{ parseTime(scope.row.updateTime) }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="操作"
-            align="center"
-            width="160"
-            class-name="small-padding fixed-width"
-          >
-            <template slot-scope="scope">
-              <el-button
-                size="mini"
-                type="text"
-                icon="el-icon-edit"
-                @click="handleUpdate(scope.row)"
-              >修改</el-button>
-              <el-button
-                size="mini"
-                type="text"
-                icon="el-icon-delete"
-                @click="handleDelete(scope.row)"
-              >删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-
-        <pagination
-          v-show="total>0"
-          :total="total"
-          :page.sync="queryParams.current"
-          :limit.sync="queryParams.size"
-          @pagination="getList"
+    <!-- 搜索栏表单 -->
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      :inline="true"
+      v-show="showSearch"
+      label-width="68px"
+    >
+      <el-form-item label="省份名称" prop="provinceName">
+        <el-input
+          v-model="queryParams.provinceName"
+          placeholder="请输入省份名称"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
         />
+      </el-form-item>
+
+      <el-form-item label="区划代码" prop="zoningCode">
+        <el-input
+          v-model="queryParams.zoningCode"
+          placeholder="请输入区划代码"
+          clearable
+          size="small"
+          style="width: 150px"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="简称" prop="abbreviation">
+        <el-input
+          v-model="queryParams.abbreviation"
+          placeholder="请输入简称"
+          clearable
+          size="small"
+          style="width: 120px"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="状态" prop="status">
+        <el-select
+          v-model="queryParams.status"
+          placeholder="省份状态"
+          clearable
+          size="small"
+          style="width: 120px"
+        >
+          <el-option label="启用" value="1" />
+          <el-option label="禁用" value="0" />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+      </el-form-item>
+    </el-form>
+
+    <!-- 列表上方菜单栏 -->
+    <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
       </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="success"
+          plain
+          icon="el-icon-edit"
+          size="mini"
+          :disabled="single"
+          @click="handleUpdate"
+        >修改</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="danger"
+          plain
+          icon="el-icon-delete"
+          size="mini"
+          :disabled="multiple"
+          @click="handleDelete"
+        >删除</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button type="info" plain icon="el-icon-upload2" size="mini" @click="handleImport">导入</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button type="info" plain icon="el-icon-upload2" size="mini" @click="syncData">同步</el-button>
+      </el-col>
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
+    <!-- 列表数据 -->
+    <el-table v-loading="loading" :data="provinceList" @selection-change="handleSelectionChange">
+      <el-table-column type="selection" align="center" width="50" />
+      <el-table-column
+        label="省份编号"
+        align="center"
+        key="pkProvinceId"
+        prop="pkProvinceId"
+        v-if="columns[0].visible"
+      />
+      <el-table-column
+        label="省份名称"
+        align="center"
+        key="provinceName"
+        prop="provinceName"
+        v-if="columns[1].visible"
+        :show-overflow-tooltip="true"
+      />
+      <el-table-column
+        label="区划代码"
+        align="center"
+        key="zoningCode"
+        prop="zoningCode"
+        v-if="columns[2].visible"
+      />
+      <el-table-column
+        label="简称"
+        align="center"
+        key="abbreviation"
+        prop="abbreviation"
+        v-if="columns[3].visible"
+        :show-overflow-tooltip="true"
+      />
+      <el-table-column
+        label="省会"
+        align="center"
+        key="provinceCapital"
+        prop="provinceCapital"
+        v-if="columns[4].visible"
+      />
+      <el-table-column
+        label="首字母"
+        align="center"
+        key="szm"
+        prop="szm"
+        v-if="columns[5].visible"
+      />
+      <el-table-column label="排序" align="center" key="sort" prop="sort" v-if="columns[6].visible" />
+      <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[7].visible">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.createTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="更新时间" align="center" prop="updateTime" v-if="columns[8].visible">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.updateTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="状态" align="center" v-if="columns[9].visible" width="100">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.status"
+            :active-value="1"
+            :inactive-value="0"
+            @change="handleStatusChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
+
+      <!-- 操作栏 -->
+      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
+        <template slot-scope="scope">
+          <!-- 1修改 -->
+          <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
+          <!-- 2删除 -->
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-delete"
+            @click="handleDelete(scope.row)"
+          >删除</el-button>
+          <!-- 3查看下级 arrow-down-->
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-arrow-down"
+            @click="handleChildren(scope.row)"
+          >查看下级</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <!-- 分页操作 -->
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.current"
+      :limit.sync="queryParams.size"
+      @pagination="getList"
+    />
+
     <!-- 添加或修改省份配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="省份名称" prop="provinceName">
-              <el-input v-model="form.provinceName" placeholder="请输入省份名称" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="区划代码" prop="zoningCode">
-              <treeselect v-model="form.zoningCode" placeholder="请输入区划代码" maxlength="12" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="简称" prop="abbreviation">
-              <el-input v-model="form.abbreviation" placeholder="请输入简称" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="邮箱" prop="email">
-              <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item v-if="form.pkUserId == undefined" label="省份名称" prop="userName">
-              <el-input v-model="form.userName" placeholder="请输入省份名称" maxlength="30" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item v-if="form.pkUserId == undefined" label="省份密码" prop="password">
-              <el-input
-                v-model="form.password"
-                placeholder="请输入省份密码"
-                type="password"
-                maxlength="20"
-                show-password
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="省份性别">
-              <el-select v-model="form.sex" placeholder="请选择">
-                <el-option
-                  v-for="item in dict.type.sys_user_sex"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="状态">
-              <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="item in dict.type.sys_normal_disable"
-                  :key="item.value"
-                  :label="item.value"
-                >{{item.label}}</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="岗位">
-              <el-select v-model="form.postIds" multiple placeholder="请选择">
-                <el-option
-                  v-for="item in postOptions"
-                  :key="item.postId"
-                  :label="item.postName"
-                  :value="item.postId"
-                  :disabled="item.status == 1"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="角色">
-              <el-select v-model="form.roleIds" multiple placeholder="请选择">
-                <el-option
-                  v-for="item in roleOptions"
-                  :key="item.roleId"
-                  :label="item.roleName"
-                  :value="item.roleId"
-                  :disabled="item.status == 1"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="备注">
-              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <el-form-item label="省份名称" prop="provinceName">
+          <el-input v-model="form.provinceName" placeholder="请输入省份名称" />
+        </el-form-item>
+        <el-form-item label="区划代码" prop="zoningCode">
+          <el-input v-model="form.zoningCode" placeholder="请输入区划代码" />
+        </el-form-item>
+        <el-form-item label="简称" prop="abbreviation">
+          <el-input v-model="form.abbreviation" placeholder="请输入简称" />
+        </el-form-item>
+        <el-form-item label="省会" prop="provinceCapital">
+          <el-input v-model="form.provinceCapital" placeholder="请输入省会" />
+        </el-form-item>
+        <el-form-item label="类别" prop="type">
+          <el-radio-group v-model="form.type">
+            <el-radio :label="1">省</el-radio>
+            <el-radio :label="2">直辖市</el-radio>
+            <el-radio :label="3">自治区</el-radio>
+            <el-radio :label="4">特别行政区</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="排序" prop="sort">
+          <el-input-number v-model="form.sort" controls-position="right" :min="1" />
+        </el-form-item>
+        <el-form-item label="状态" prop="status">
+          <el-radio-group v-model="form.status">
+            <el-radio :label="1">启用</el-radio>
+            <el-radio :label="0">禁用</el-radio>
+          </el-radio-group>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
-
-    <!-- 省份导入对话框 -->
-    <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
-      <el-upload
-        ref="upload"
-        :limit="1"
-        accept=".xlsx, .xls"
-        :headers="upload.headers"
-        :action="upload.url + '?updateSupport=' + upload.updateSupport"
-        :disabled="upload.isUploading"
-        :on-progress="handleFileUploadProgress"
-        :on-success="handleFileSuccess"
-        :auto-upload="false"
-        drag
-      >
-        <i class="el-icon-upload"></i>
-        <div class="el-upload__text">
-          将文件拖到此处，或
-          <em>点击上传</em>
-        </div>
-        <div class="el-upload__tip text-center" slot="tip">
-          <div class="el-upload__tip" slot="tip">
-            <el-checkbox v-model="upload.updateSupport" />是否更新已经存在的省份数据
-          </div>
-          <span>仅允许导入xls、xlsx格式文件。</span>
-          <el-link
-            type="primary"
-            :underline="false"
-            style="font-size:12px;vertical-align: baseline;"
-            @click="importTemplate"
-          >下载模板</el-link>
-        </div>
-      </el-upload>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitFileForm">确 定</el-button>
-        <el-button @click="upload.open = false">取 消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -367,15 +237,9 @@
 
 <script>
 import { listProvince, getProvince, delProvince, addProvince, updateProvince, changeProvinceStatus } from "@/api/dictionary/xzqh/province";
-import { getToken } from "@/utils/auth";
-import { treeselect } from "@/api/system/dept";
-import Treeselect from "@riophae/vue-treeselect";
-import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
   name: "Province",
-  dicts: ['sys_normal_disable', 'sys_user_sex'],
-  components: { Treeselect },
   data () {
     return {
       // 遮罩层
@@ -391,103 +255,45 @@ export default {
       // 总条数
       total: 0,
       // 省份表格数据
-      provinceList: null,
+      provinceList: [],
       // 弹出层标题
       title: "",
-      // 部门树选项
-      deptOptions: undefined,
       // 是否显示弹出层
       open: false,
-      // 部门名称
-      deptName: undefined,
-      // 日期范围
-      dateRange: [],
-      // 岗位选项
-      postOptions: [],
-      // 角色选项
-      roleOptions: [],
-      // 表单参数
-      form: {},
-      defaultProps: {
-        children: "child",
-        label: "deptName"
-      },
-      // 省份导入参数
-      upload: {
-        // 是否显示弹出层（省份导入）
-        open: false,
-        // 弹出层标题（省份导入）
-        title: "",
-        // 是否禁用上传
-        isUploading: false,
-        // 是否更新已经存在的省份数据
-        updateSupport: 0,
-        // 设置上传的请求头部
-        headers: { Authorization: getToken() },
-        // 上传的地址
-        url: process.env.VUE_APP_BASE_API + "/dictionary/province/importData"
-      },
       // 查询参数
       queryParams: {
         current: 1,
         size: 10,
-        userName: undefined,
-        phone: undefined,
-        status: undefined,
-        deptId: undefined
+        zoningCode: undefined,
+        provinceName: undefined,
+        abbreviation: undefined,
+        status: undefined
       },
       // 列信息
       columns: [
-        { key: 0, label: `省份编号`, visible: true },
-        { key: 1, label: `省份名称`, visible: true },
+        { key: 0, label: `街道编号`, visible: true },
+        { key: 1, label: `街道名称`, visible: true },
         { key: 2, label: `区划代码`, visible: true },
         { key: 3, label: `简称`, visible: true },
         { key: 4, label: `省会`, visible: true },
         { key: 5, label: `首字母`, visible: true },
         { key: 6, label: `排序`, visible: true },
-        { key: 7, label: `状态`, visible: true },
-        { key: 8, label: `创建时间`, visible: true },
-        { key: 9, label: `更新时间`, visible: true }
+        { key: 7, label: `创建时间`, visible: true },
+        { key: 8, label: `更新时间`, visible: true },
+        { key: 9, label: `状态`, visible: true },
       ],
+      // 表单参数
+      form: {},
       // 表单校验
       rules: {
-        userName: [
-          { required: true, message: "省份名称不能为空", trigger: "blur" },
-          { min: 2, max: 20, message: '省份名称长度必须介于 2 和 20 之间', trigger: 'blur' }
-        ],
-        nickName: [
-          { required: true, message: "省份昵称不能为空", trigger: "blur" }
-        ],
-        password: [
-          { required: true, message: "省份密码不能为空", trigger: "blur" },
-          { min: 5, max: 20, message: '省份密码长度必须介于 5 和 20 之间', trigger: 'blur' }
-        ],
-        email: [
-          {
-            type: "email",
-            message: "'请输入正确的邮箱地址",
-            trigger: ["blur", "change"]
-          }
-        ],
-        phone: [
-          {
-            pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
-            message: "请输入正确的手机号码",
-            trigger: "blur"
-          }
+        provinceName: [
+          { required: true, message: "省份名称不能为空", trigger: "blur" }
         ]
       }
     };
   },
-  watch: {
-    // 根据名称筛选部门树
-    deptName (val) {
-      this.$refs.tree.filter(val);
-    }
-  },
   created () {
     this.getList();
-    this.getTreeselect();
   },
   methods: {
     /** 查询省份列表 */
@@ -500,21 +306,57 @@ export default {
       }
       );
     },
-    /** 查询部门下拉树结构 */
-    getTreeselect () {
-      treeselect().then(response => {
-        this.deptOptions = response.data;
-      });
+
+    // 取消按钮
+    cancel () {
+      this.open = false;
+      this.reset();
     },
-    // 筛选节点
-    filterNode (value, data) {
-      if (!value) return true;
-      return data.deptName.indexOf(value) !== -1;
+    // 表单重置
+    reset () {
+      this.form = {
+        provinceName: undefined,
+        zoningCode: undefined,
+        abbreviation: undefined,
+        provinceCapital: undefined,
+        sort: 1,
+        status: 1
+      };
+      this.resetForm("form");
     },
-    // 节点单击事件
-    handleNodeClick (data) {
-      this.queryParams.deptId = data.pkDeptId;
+    /** 搜索按钮操作 */
+    handleQuery () {
+      this.queryParams.current = 1;
       this.getList();
+    },
+    /** 重置按钮操作 */
+    resetQuery () {
+      this.resetForm("queryForm");
+      this.handleQuery();
+    },
+    // 多选框选中数据
+    handleSelectionChange (selection) {
+      this.ids = selection.map(item => item.pkProvinceId)
+      this.single = selection.length != 1
+      this.multiple = !selection.length
+    },
+    /** 新增按钮操作 */
+    handleAdd () {
+      this.reset();
+      this.open = true;
+      this.title = "添加省份";
+    },
+
+
+    /** 修改按钮操作 */
+    handleUpdate (row) {
+      this.reset();
+      const provinceIds = row.pkProvinceId || this.ids
+      getProvince(provinceIds).then(response => {
+        this.form = response.data.records;
+        this.open = true;
+        this.title = "修改省份";
+      });
     },
     // 省份状态修改
     handleStatusChange (row) {
@@ -527,117 +369,18 @@ export default {
         row.status = row.status === 1 ? 0 : 1;
       });
     },
-    // 取消按钮
-    cancel () {
-      this.open = false;
-      this.reset();
-    },
-    // 表单重置
-    reset () {
-      this.form = {
-        pkUserId: undefined,
-        deptId: undefined,
-        userName: undefined,
-        nickName: undefined,
-        password: undefined,
-        phone: undefined,
-        email: undefined,
-        sex: undefined,
-        status: 1,
-        remark: undefined,
-        postIds: [],
-        roleIds: []
-      };
-      this.resetForm("form");
-    },
-    /** 搜索按钮操作 */
-    handleQuery () {
-      this.queryParams.current = 1;
-      this.getList();
-    },
-    /** 重置按钮操作 */
-    resetQuery () {
-      this.dateRange = [];
-      this.resetForm("queryForm");
-      this.handleQuery();
-    },
-    // 多选框选中数据
-    handleSelectionChange (selection) {
-      this.ids = selection.map(item => item.pkUserId);
-      this.single = selection.length != 1;
-      this.multiple = !selection.length;
-    },
-    // 更多操作触发
-    handleCommand (command, row) {
-      switch (command) {
-        case "handleResetPwd":
-          this.handleResetPwd(row);
-          break;
-        case "handleAuthRole":
-          this.handleAuthRole(row);
-          break;
-        default:
-          break;
-      }
-    },
-    /** 新增按钮操作 */
-    handleAdd () {
-      this.reset();
-      this.getTreeselect();
-      getUser().then(response => {
-        this.postOptions = response.posts;
-        this.roleOptions = response.roles;
-        this.open = true;
-        this.title = "添加省份";
-      });
-    },
-    /** 修改按钮操作 */
-    handleUpdate (row) {
-      this.reset();
-      this.getTreeselect();
-      const pkUserId = row.pkUserId || this.ids;
-      getUser(pkUserId).then(response => {
-        this.form = response.data;
-        this.postOptions = response.posts;
-        this.roleOptions = response.roles;
-        this.form.postIds = response.postIds;
-        this.form.roleIds = response.roleIds;
-        this.open = true;
-        this.title = "修改省份";
-        this.form.password = "";
-      });
-    },
-    /** 重置密码按钮操作 */
-    handleResetPwd (row) {
-      this.$prompt('请输入"' + row.userName + '"的新密码', "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        closeOnClickModal: false,
-        inputPattern: /^.{5,20}$/,
-        inputErrorMessage: "省份密码长度必须介于 5 和 20 之间",
-      }).then(({ value }) => {
-        resetUserPwd(row.pkUserId, value).then(response => {
-          this.$modal.msgSuccess("修改成功，新密码是：" + value);
-        });
-      }).catch(() => { });
-    },
-    /** 分配角色操作 */
-    handleAuthRole: function (row) {
-      const pkUserId = row.pkUserId;
-      this.$router.push("/dictionary/province-auth/role/" + pkUserId);
-    },
     /** 提交按钮 */
     submitForm: function () {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.pkUserId != undefined) {
-            updateUser(this.form).then(response => {
+          if (this.form.pkProvinceId != undefined) {
+            updateProvince(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addUser(this.form).then(response => {
+            addProvince(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -646,47 +389,43 @@ export default {
         }
       });
     },
-    /** 删除按钮操作 */
+    /** 删除按钮操作，多选删除和单个删除 */
     handleDelete (row) {
-      const userIds = row.pkUserId || this.ids;
-      this.$modal.confirm('是否确认删除省份编号为"' + userIds + '"的数据项？').then(function () {
-        return delUser(userIds);
+      const provinceIds = row.pkProvinceId || this.ids;
+      this.$modal.confirm('是否确认删除省份编号为"' + provinceIds + '"的数据项？').then(function () {
+        return delProvince(provinceIds);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
       }).catch(() => { });
     },
-    /** 导出按钮操作 */
-    handleExport () {
-      this.download('dictionary/province/export', {
-        ...this.queryParams
-      }, `user_${new Date().getTime()}.xlsx`)
+
+    /** 查看下级按钮操作 */
+    handleChildren (row) {
+      const provinceId = row.pkProvinceId
+      this.$router.push({
+        path: '/dictionary/city',
+        query: {
+          pId: provinceId
+        }
+      })
     },
     /** 导入按钮操作 */
     handleImport () {
       this.upload.title = "省份导入";
       this.upload.open = true;
     },
-    /** 下载模板操作 */
-    importTemplate () {
-      this.download('dictionary/province/importTemplate', {
-      }, `user_template_${new Date().getTime()}.xlsx`)
+    /** 导出按钮操作 */
+    handleExport () {
+      this.download('dictionary/province/export', {
+        ...this.queryParams
+      }, `post_${new Date().getTime()}.xlsx`)
     },
-    // 文件上传中处理
-    handleFileUploadProgress (event, file, fileList) {
-      this.upload.isUploading = true;
-    },
-    // 文件上传成功处理
-    handleFileSuccess (response, file, fileList) {
-      this.upload.open = false;
-      this.upload.isUploading = false;
-      this.$refs.upload.clearFiles();
-      this.$alert(response.msg, "导入结果", { dangerouslyUseHTMLString: true });
-      this.getList();
-    },
-    // 提交上传文件
-    submitFileForm () {
-      this.$refs.upload.submit();
+    /** 同步按钮操作 同步后台数据库中使用python从统计局爬取到的数据*/
+    syncData () {
+      syncProvinceData(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+      }
+      );
     }
   }
 };
