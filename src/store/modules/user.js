@@ -71,7 +71,6 @@ const user = {
       const code = userInfo.code
       return new Promise((resolve, reject) => {
         login(username, password, code).then(res => {
-          console.log(res)
           let data = res.data
           setToken(data.access_token)
           commit('SET_TOKEN', data.access_token)

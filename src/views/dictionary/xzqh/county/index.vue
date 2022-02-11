@@ -108,7 +108,7 @@
     </el-row>
 
     <!-- 列表数据 -->
-    <el-table v-loading="loading" :data="countyList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="countyList" @selection-change="handleSelectionChange" style="width: 100%" height="650" :border="true" :cell-style="{padding:'5px'}">
       <el-table-column type="selection" align="center" width="50" />
       <el-table-column
         label="乡镇编号"
@@ -159,7 +159,7 @@
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center" v-if="columns[8].visible" width="100">
+      <el-table-column label="状态" align="center" v-if="columns[8].visible" width="65">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"

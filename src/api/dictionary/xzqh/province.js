@@ -45,9 +45,9 @@ export function delProvince(provinceId) {
 }
 
 // 省份状态修改
-export function changeProvinceStatus(pkprovinceId, status) {
+export function changeProvinceStatus(pkProvinceId, status) {
   const data = {
-    pkprovinceId,
+    pkProvinceId,
     status
   }
   return request({

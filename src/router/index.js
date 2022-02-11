@@ -37,20 +37,8 @@ export const constantRoutes = [
       {
         path: 'index',
         component: (resolve) => require(['@/views/index'], resolve),
-        name: 'Index',
+        name: 'index',
         meta: { title: '首页145', icon: 'dashboard', affix: true }
-      },
-      {
-        path: 'test',
-        component: (resolve) => require(['@/views/test'], resolve),
-        name: 'test',
-        meta: { title: 'test', icon: 'dashboard', affix: true }
-      },
-      {
-        path: 'test2',
-        component: (resolve) => require(['@/views/test'], resolve),
-        name: 'test2',
-        meta: { title: 'test2', icon: 'dashboard', affix: true }
       }
     ]
   },
@@ -155,7 +143,7 @@ export const constantRoutes = [
       {
         path: 'profile',
         component: (resolve) => require(['@/views/system/user/profile/index'], resolve),
-        name: 'Profile',
+        name: 'profile',
         meta: { title: '个人中心', icon: 'user' }
       }
     ]
@@ -168,7 +156,7 @@ export const constantRoutes = [
       {
         path: 'role/:userId(\\d+)',
         component: (resolve) => require(['@/views/system/user/authRole'], resolve),
-        name: 'AuthRole',
+        name: 'authRole',
         meta: { title: '分配角色', activeMenu: '/system/user' }
       }
     ]
@@ -181,7 +169,7 @@ export const constantRoutes = [
       {
         path: 'user/:roleId(\\d+)',
         component: (resolve) => require(['@/views/system/role/authUser'], resolve),
-        name: 'AuthUser',
+        name: 'authUser',
         meta: { title: '分配用户', activeMenu: '/system/role' }
       }
     ]
@@ -194,7 +182,7 @@ export const constantRoutes = [
       {
         path: 'index/:dictId(\\d+)',
         component: (resolve) => require(['@/views/system/dict/data'], resolve),
-        name: 'Data',
+        name: 'data',
         meta: { title: '字典数据', activeMenu: '/system/dict' }
       }
     ]
@@ -207,7 +195,7 @@ export const constantRoutes = [
       {
         path: 'index',
         component: (resolve) => require(['@/views/monitor/job/log'], resolve),
-        name: 'JobLog',
+        name: 'jobLog',
         meta: { title: '调度日志', activeMenu: '/monitor/job' }
       }
     ]
@@ -220,7 +208,7 @@ export const constantRoutes = [
       {
         path: 'index',
         component: (resolve) => require(['@/views/tool/gen/editTable'], resolve),
-        name: 'GenEdit',
+        name: 'genEdit',
         meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
       }
     ]

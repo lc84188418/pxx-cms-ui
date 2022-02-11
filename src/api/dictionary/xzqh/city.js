@@ -19,9 +19,9 @@ export function listCity(query) {
 }
 
 // 查询城市详细
-export function getCity(provinceId) {
+export function getCity(cityId) {
   return request({
-    url: '/dictionary/city/' + praseStrEmpty(provinceId),
+    url: '/dictionary/city/' + praseStrEmpty(cityId),
     method: 'get'
   })
 }
@@ -45,17 +45,17 @@ export function updateCity(data) {
 }
 
 //删除城市
-export function delCity(provinceId) {
+export function delCity(cityId) {
   return request({
-    url: '/dictionary/city/' + provinceId,
+    url: '/dictionary/city/' + cityId,
     method: 'delete'
   })
 }
 
 // 城市状态修改
-export function changeCityStatus(pkprovinceId, status) {
+export function changeCityStatus(pkCityId, status) {
   const data = {
-    pkprovinceId,
+    pkCityId,
     status
   }
   return request({

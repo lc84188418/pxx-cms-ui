@@ -141,14 +141,14 @@ export default {
     handleAuthRender (source) {
       console.log('访问第三方授权'+source);
       authRender(source).then(res => {
-        console.log(res);
+        // console.log(res);
         //window.open(res).then(result => {})
         var width = width || 900;
 		    var height = height || 540;
 				var left = (window.screen.width - width) / 2;
 				var top = (window.screen.height - height) / 2;
         var win = window.open(res, "_blank","toolbar=yes, location=yes, directories=no, status=no, menubar=yes, scrollbars=yes, resizable=no, copyhistory=yes, left=" + left + ", top=" + top + ", width=" + width + ", height=" + height);
-        console.log(win.closed);
+        // console.log(win.closed);
 
 		    //监听登录窗口是否关闭,登录成功后 后端返回关闭窗口的代码
 		    var listener = setInterval(function(){
@@ -156,7 +156,6 @@ export default {
           if(win.closed){
             //进入这个if代表后端验证成功!直接跳转路由
             //关闭监听
-            console.log('关闭监听');
             clearInterval(listener);
             //跳转路由
             this.$router.push('/')

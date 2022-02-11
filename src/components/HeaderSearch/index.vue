@@ -105,7 +105,7 @@ export default {
     // And generate the internationalized title
     generateRoutes(routes, basePath = '/', prefixTitle = []) {
       let res = []
-      console.log(routes)
+      // console.log(routes)
       for (const router of routes) {
         // skip hidden router
         if (router.hidden) { continue }

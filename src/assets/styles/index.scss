@@ -5,6 +5,14 @@
 @import './sidebar.scss';
 @import './btn.scss';
 
+.dictionary-xzqh-table {
+  width: 100% !important;
+  height:650px !important;
+  border:true !important;
+  // padding:5px
+  
+}
+
 body {
   height: 100%;
   -moz-osx-font-smoothing: grayscale;

@@ -93,14 +93,16 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <!-- 列表数据 -->
-    <el-table v-loading="loading" :data="provinceList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" align="center" width="50" />
+    <!-- 列表数据 fixed="left"-->
+    <!-- <el-table v-loading="loading" :data="provinceList" @selection-change="handleSelectionChange" style="width: 100%" height="650" border=true :cell-style="{padding:'5px'}"> -->
+    <el-table v-loading="loading" :data="provinceList" @selection-change="handleSelectionChange" class="dictionary-xzqh-table" style="width: 100%" height="650" :border="true" :cell-style="{padding:'5px'}">
+      <el-table-column type="selection" align="center" width="50"/>
       <el-table-column
         label="省份编号"
         align="center"
         key="pkProvinceId"
         prop="pkProvinceId"
+        width="80"
         v-if="columns[0].visible"
       />
       <el-table-column
@@ -140,7 +142,7 @@
         prop="szm"
         v-if="columns[5].visible"
       />
-      <el-table-column label="排序" align="center" key="sort" prop="sort" v-if="columns[6].visible" />
+      <el-table-column label="排序" align="center" key="sort" prop="sort" v-if="columns[6].visible" width="60"/>
       <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[7].visible">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
@@ -151,7 +153,7 @@
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center" v-if="columns[9].visible" width="100">
+      <el-table-column label="状态" align="center" v-if="columns[9].visible" width="65">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
@@ -161,8 +163,7 @@
           ></el-switch>
         </template>
       </el-table-column>
-
-      <!-- 操作栏 -->
+      <!-- 操作栏  fixed="right"-->
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <!-- 1修改 -->
@@ -237,7 +238,6 @@
 
 <script>
 import { listProvince, getProvince, delProvince, addProvince, updateProvince, changeProvinceStatus } from "@/api/dictionary/xzqh/province";
-
 export default {
   name: "Province",
   data () {
@@ -258,12 +258,12 @@ export default {
       provinceList: [],
       // 弹出层标题
       title: "",
-      // 是否显示弹出层
+      // 是否显示添加修改的弹出层
       open: false,
       // 查询参数
       queryParams: {
         current: 1,
-        size: 10,
+        size: 15,
         zoningCode: undefined,
         provinceName: undefined,
         abbreviation: undefined,
@@ -430,3 +430,12 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.dictionary-xzqh-table{
+  width: 100% !important;
+  height:650px !important;
+  border:true !important;
+  // font-size: 30px
+  // padding:5px
+}
+</style>>

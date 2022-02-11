@@ -107,7 +107,7 @@
     </el-row>
 
     <!-- 列表数据 -->
-    <el-table v-loading="loading" :data="streetList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="streetList" @selection-change="handleSelectionChange" style="width: 100%" height="650" :border="true" :cell-style="{padding:'5px'}">
       <el-table-column type="selection" align="center" width="50" />
       <el-table-column
         label="街道编号"
@@ -165,7 +165,7 @@
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center" v-if="columns[10].visible" width="100">
+      <el-table-column label="状态" align="center" v-if="columns[10].visible" width="65">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
@@ -354,7 +354,7 @@ export default {
         streetName: undefined,
         zoningCode: undefined,
         youbian: undefined,
-        sort: 0,
+        sort: 1,
         status: 1
       };
       this.resetForm("form");

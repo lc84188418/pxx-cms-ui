@@ -8,6 +8,19 @@
       v-show="showSearch"
       label-width="68px"
     >
+          <!-- 用query获取值 -->
+      <p>提示：{{this.$route.query.pId}}</p>
+      <p>提示2：{{parentId}}</p>
+      <el-form-item label="所属城市" prop="parentId">
+        <el-input
+          v-model="queryParams.fkCityId"
+          value="this.$route.query.pId"
+          placeholder="请输入省份编码"
+          clearable
+          size="small"
+          :disabled="!isParentLink"
+        />
+      </el-form-item>
       <el-form-item label="区域名称" prop="areaName">
         <el-input
           v-model="queryParams.areaName"
@@ -94,7 +107,7 @@
     </el-row>
 
     <!-- 列表数据 -->
-    <el-table v-loading="loading" :data="areaList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="areaList" @selection-change="handleSelectionChange" style="width: 100%" height="650" :border="true" :cell-style="{padding:'5px'}">
       <el-table-column type="selection" align="center" width="50" />
       <el-table-column
         label="区域编号"
@@ -133,7 +146,7 @@
         prop="youbian"
         v-if="columns[4].visible"
       />
-      <el-table-column label="首字母" align="center" key="szm" prop="szm" v-if="columns[5].visible" />
+      <el-table-column label="首字母" align="center" key="szm" prop="szm" v-if="columns[5].visible" width="60"/>
       <el-table-column label="排序" align="center" key="sort" prop="sort" v-if="columns[6].visible" />
       <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[7].visible">
         <template slot-scope="scope">
@@ -145,7 +158,7 @@
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center" v-if="columns[9].visible" width="100">
+      <el-table-column label="状态" align="center" v-if="columns[9].visible" width="65">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
@@ -259,8 +272,10 @@ export default {
       queryParams: {
         current: 1,
         size: 10,
+        fkCityId: undefined,
         areaName: undefined,
         zoningCode: undefined,
+        youbian: undefined,
         status: undefined
       },
       // 列信息
@@ -410,7 +425,7 @@ export default {
       this.$router.push({
         path: '/dictionary/street',
         query: {
-          fkAreaId: areaId
+          pId: areaId
         }
       })
     },

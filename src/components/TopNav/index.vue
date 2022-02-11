@@ -67,8 +67,8 @@ export default {
     topMenus() {
       let topMenus = [];
       this.routers.map((menu) => {
-        console.log('顶部菜单');
-        console.log(menu);
+        // console.log('顶部菜单');
+        // console.log(menu);
         if (menu.status === 1) {
           // 兼容顶部栏一级菜单内部跳转
           if (menu.path === "/") {
