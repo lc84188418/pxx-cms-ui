@@ -8,17 +8,13 @@
       v-show="showSearch"
       label-width="68px"
     >
-          <!-- 用query获取值 -->
-      <p>提示：{{this.$route.query.pId}}</p>
-      <p>提示2：{{parentId}}</p>
-      <el-form-item label="所属城市" prop="parentId">
+      <el-form-item label="所属城市" prop="fkCityId">
         <el-input
           v-model="queryParams.fkCityId"
-          value="this.$route.query.pId"
           placeholder="请输入省份编码"
           clearable
           size="small"
-          :disabled="!isParentLink"
+          :disabled="isParentLink"
         />
       </el-form-item>
       <el-form-item label="区域名称" prop="areaName">
@@ -107,7 +103,15 @@
     </el-row>
 
     <!-- 列表数据 -->
-    <el-table v-loading="loading" :data="areaList" @selection-change="handleSelectionChange" style="width: 100%" height="650" :border="true" :cell-style="{padding:'5px'}">
+    <el-table
+      v-loading="loading"
+      :data="areaList"
+      @selection-change="handleSelectionChange"
+      style="width: 100%"
+      height="650"
+      :border="true"
+      :cell-style="{padding:'5px'}"
+    >
       <el-table-column type="selection" align="center" width="50" />
       <el-table-column
         label="区域编号"
@@ -146,7 +150,14 @@
         prop="youbian"
         v-if="columns[4].visible"
       />
-      <el-table-column label="首字母" align="center" key="szm" prop="szm" v-if="columns[5].visible" width="60"/>
+      <el-table-column
+        label="首字母"
+        align="center"
+        key="szm"
+        prop="szm"
+        v-if="columns[5].visible"
+        width="60"
+      />
       <el-table-column label="排序" align="center" key="sort" prop="sort" v-if="columns[6].visible" />
       <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[7].visible">
         <template slot-scope="scope">
@@ -260,6 +271,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
+      //是否是从上级跳转过来的,默认否
+      isParentLink: false,
       // 区域表格数据
       areaList: [],
       // 城市列表数据
@@ -271,7 +284,7 @@ export default {
       // 查询参数
       queryParams: {
         current: 1,
-        size: 10,
+        size: 15,
         fkCityId: undefined,
         areaName: undefined,
         zoningCode: undefined,
@@ -305,6 +318,14 @@ export default {
     };
   },
   created () {
+    //先拿到父级ID
+    this.queryParams.fkCityId = this.$route.query.pId;
+    if (this.queryParams.fkCityId == "undefined") {
+      this.isParentLink = false
+    } else if (this.queryParams.fkCityId > 0) {
+      this.isParentLink = true
+    }
+    //再请求数据
     this.getList();
   },
   methods: {

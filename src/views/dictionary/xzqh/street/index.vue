@@ -8,17 +8,13 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <!-- 用query获取值 -->
-      <p>提示：{{this.$route.query.fkAreaId}}</p>
-      <p>提示2：{{parentId}}</p>
-      <el-form-item label="所属区域" prop="parentId">
+      <el-form-item label="所属区域" prop="fkAreaId">
         <el-input
           v-model="queryParams.fkAreaId"
-          value="this.$route.query.fkAreaId"
           placeholder="请输入区域编码"
           clearable
           size="small"
-          :disabled="!isParentLink"
+          :disabled="isParentLink"
         />
       </el-form-item>
       <el-form-item label="街道名称" prop="streetName">
@@ -107,7 +103,15 @@
     </el-row>
 
     <!-- 列表数据 -->
-    <el-table v-loading="loading" :data="streetList" @selection-change="handleSelectionChange" style="width: 100%" height="650" :border="true" :cell-style="{padding:'5px'}">
+    <el-table
+      v-loading="loading"
+      :data="streetList"
+      @selection-change="handleSelectionChange"
+      style="width: 100%"
+      height="650"
+      :border="true"
+      :cell-style="{padding:'5px'}"
+    >
       <el-table-column type="selection" align="center" width="50" />
       <el-table-column
         label="街道编号"
@@ -270,8 +274,6 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      //父级ID
-      parentId: undefined,
       //是否是从上级跳转过来的,默认否
       isParentLink: false,
       // 街道表格数据
@@ -285,7 +287,8 @@ export default {
       // 查询参数
       queryParams: {
         current: 1,
-        size: 10,
+        size: 15,
+        fkAreaId: undefined,
         zoningCode: undefined,
         streetName: undefined,
         status: undefined
@@ -315,16 +318,16 @@ export default {
     };
   },
   created () {
+    //先拿到父级ID
+    this.queryParams.fkAreaId = this.$route.query.pId;
+    if (this.queryParams.fkAreaId == "undefined") {
+      this.isParentLink = false
+    } else if (this.queryParams.fkAreaId > 0) {
+      this.isParentLink = true
+    }
+    //再请求数据
     this.getList();
-    // this.parentId = this.$router.query.fkAreaId
-    // console.log(this.parentId);
   },
-  // components: {
-  //   parentId: this.$router.query.fkAreaId
-  // },
-  // computed: {
-  //   parentId: this.$router.query.fkAreaId
-  // },
   methods: {
     /** 查询街道列表 */
     getList () {
@@ -443,7 +446,7 @@ export default {
       this.$router.push({
         path: '/dictionary/county',
         query: {
-          fkStreetId: streetId
+          pId: streetId
         }
       })
     },

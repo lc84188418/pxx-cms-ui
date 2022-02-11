@@ -8,8 +8,6 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <!-- 用query获取值 -->
-      <p>提示：{{this.$route.query.pId}}</p>
       <el-form-item label="所属省份" prop="fkProvinceId">
         <el-input
           v-model="queryParams.fkProvinceId"
@@ -115,7 +113,15 @@
     </el-row>
 
     <!-- 列表数据 -->
-    <el-table v-loading="loading" :data="cityList" @selection-change="handleSelectionChange" style="width: 100%" height="650" :border="true" :cell-style="{padding:'5px'}">
+    <el-table
+      v-loading="loading"
+      :data="cityList"
+      @selection-change="handleSelectionChange"
+      style="width: 100%"
+      height="650"
+      :border="true"
+      :cell-style="{padding:'5px'}"
+    >
       <el-table-column type="selection" align="center" width="50" />
       <el-table-column
         label="城市编号"
@@ -172,7 +178,14 @@
         width="80"
         v-if="columns[6].visible"
       />
-      <el-table-column label="首字母" align="center" key="szm" prop="szm" v-if="columns[7].visible" width="60"/>
+      <el-table-column
+        label="首字母"
+        align="center"
+        key="szm"
+        prop="szm"
+        v-if="columns[7].visible"
+        width="60"
+      />
       <el-table-column label="排序" align="center" key="sort" prop="sort" v-if="columns[8].visible" />
       <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[9].visible">
         <template slot-scope="scope">
@@ -230,7 +243,7 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="所属省份" prop="fkProvinceId">
-          <el-input v-model="form.fkProvinceId" disabled/>
+          <el-input v-model="form.fkProvinceId" disabled />
         </el-form-item>
         <el-form-item label="城市名称" prop="cityName">
           <el-input v-model="form.cityName" placeholder="请输入城市名称" />
@@ -281,8 +294,6 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      //父级ID
-      fkProvinceId: undefined,
       //是否是从上级跳转过来的,默认否
       isParentLink: false,
       // 城市表格数据
@@ -295,7 +306,7 @@ export default {
       queryParams: {
         current: 1,
         size: 15,
-        fkProvinceId:undefined,
+        fkProvinceId: undefined,
         cityName: undefined,
         zoningCode: undefined,
         youbian: undefined,
@@ -328,22 +339,23 @@ export default {
     };
   },
   created () {
-    this.getList();
-  },
-  mounted() {
-    this.fkProvinceId = this.$route.query.pId;
-    console.log(this.fkProvinceId);
-    if(this.fkProvinceId == "undefined"){
+    //先拿到父级ID
+    this.queryParams.fkProvinceId = this.$route.query.pId;
+    if (this.queryParams.fkProvinceId == "undefined") {
       this.isParentLink = false
-    }else if(this.fkProvinceId > 0){
+    } else if (this.queryParams.fkProvinceId > 0) {
       this.isParentLink = true
     }
-    console.log(this.isParentLink);
+    //再请求数据
+    this.getList();
+
   },
+
   methods: {
     /** 查询城市列表 */
     getList () {
       this.loading = true;
+      console.log(this.queryParams);
       listCity(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
         this.cityList = response.data.records;
         this.total = response.data.total;

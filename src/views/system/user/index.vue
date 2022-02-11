@@ -11,6 +11,7 @@
             size="small"
             prefix-icon="el-icon-search"
             style="margin-bottom: 20px"
+            @keyup.enter.native="handleQuery"
           />
         </div>
         <div class="head-container">
@@ -27,7 +28,13 @@
       </el-col>
       <!--用户数据-->
       <el-col :span="20" :xs="24">
-        <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+        <el-form
+          :model="queryParams"
+          ref="queryForm"
+          :inline="true"
+          v-show="showSearch"
+          label-width="68px"
+        >
           <el-form-item label="用户名称" prop="userName">
             <el-input
               v-model="queryParams.userName"
@@ -54,16 +61,10 @@
               placeholder="用户状态"
               clearable
               size="small"
-              style="width: 240px"
+              style="width: 120px"
             >
-              <el-option
-                label="启用"
-                value="1"
-              />
-              <el-option
-                label="停用"
-                value="0"
-              />
+              <el-option label="启用" value="1" />
+              <el-option label="禁用" value="0" />
             </el-select>
           </el-form-item>
           <el-form-item label="创建时间">
@@ -86,13 +87,7 @@
 
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button
-              type="primary"
-              plain
-              icon="el-icon-plus"
-              size="mini"
-              @click="handleAdd"
-            >新增</el-button>
+            <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
           </el-col>
           <el-col :span="1.5">
             <el-button
@@ -115,13 +110,7 @@
             >删除</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button
-              type="info"
-              plain
-              icon="el-icon-upload2"
-              size="mini"
-              @click="handleImport"
-            >导入</el-button>
+            <el-button type="info" plain icon="el-icon-upload2" size="mini" @click="handleImport">导入</el-button>
           </el-col>
           <el-col :span="1.5">
             <el-button
@@ -137,26 +126,77 @@
 
         <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
           <el-table-column type="selection" align="center" width="50" />
-          <el-table-column label="用户编号" align="center" key="pkUserId" prop="pkUserId" v-if="columns[0].visible" />
-          <el-table-column label="用户名称" align="center" key="userName" prop="userName" v-if="columns[1].visible" :show-overflow-tooltip="true" />
-          <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
-          <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" v-if="columns[3].visible" :show-overflow-tooltip="true" />
-          <el-table-column label="手机号码" align="center" key="phone" prop="phone" v-if="columns[4].visible"/>
-          <el-table-column label="邮箱" align="center" key="email" prop="email" v-if="columns[5].visible"/>
-          <el-table-column label="性别" align="center" key="sex" prop="sex" v-if="columns[6].visible"/>
-          <el-table-column label="状态" align="center" v-if="columns[7].visible" width="100">
+          <el-table-column
+            label="用户编号"
+            align="center"
+            key="pkUserId"
+            prop="pkUserId"
+            v-if="columns[0].visible"
+          />
+          <el-table-column
+            label="用户名称"
+            align="center"
+            key="userName"
+            prop="userName"
+            v-if="columns[1].visible"
+            :show-overflow-tooltip="true"
+          />
+          <el-table-column
+            label="用户昵称"
+            align="center"
+            key="nickName"
+            prop="nickName"
+            v-if="columns[2].visible"
+            :show-overflow-tooltip="true"
+          />
+          <el-table-column
+            label="部门"
+            align="center"
+            key="deptName"
+            prop="dept.deptName"
+            v-if="columns[3].visible"
+            :show-overflow-tooltip="true"
+          />
+          <el-table-column
+            label="手机号码"
+            align="center"
+            key="phone"
+            prop="phone"
+            v-if="columns[4].visible"
+          />
+          <el-table-column
+            label="邮箱"
+            align="center"
+            key="email"
+            prop="email"
+            v-if="columns[5].visible"
+          />
+          <el-table-column
+            label="性别"
+            align="center"
+            key="sex"
+            prop="sex"
+            v-if="columns[6].visible"
+          />
+          <el-table-column label="状态" align="center" v-if="columns[7].visible" width="65">
             <template slot-scope="scope">
-              {{scope.row.status}}
               <el-switch
                 v-model="scope.row.status"
-                active-value="1"
-                inactive-value="0"
+                :active-value="1"
+                :inactive-value="0"
                 @change="handleStatusChange(scope.row)"
               ></el-switch>
             </template>
           </el-table-column>
 
-          <el-table-column label="最后登录ip" align="center" key="loginIp" prop="loginIp" v-if="columns[8].visible" width="120"/>
+          <el-table-column
+            label="最后登录ip"
+            align="center"
+            key="loginIp"
+            prop="loginIp"
+            v-if="columns[8].visible"
+            width="120"
+          />
           <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[9].visible">
             <template slot-scope="scope">
               <span>{{ parseTime(scope.row.createTime)}}</span>
@@ -168,7 +208,7 @@
             width="160"
             class-name="small-padding fixed-width"
           >
-          <!-- 超级管理员不可操作，即userid=1 -->
+            <!-- 超级管理员不可操作，即userid=1 -->
             <template slot-scope="scope" v-if="scope.row.pkUserId !== 1">
               <el-button
                 size="mini"
@@ -215,8 +255,13 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="归属部门" prop="deptId">
-              <treeselect v-model="form.pkDeptId" :options="deptOptions" :show-count="true" placeholder="请选择归属部门" />
+            <el-form-item label="归属部门" prop="fkDeptId">
+              <treeselect
+                v-model="form.fkDeptId"
+                :options="deptOptions"
+                :show-count="true"
+                placeholder="请选择归属部门"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -240,31 +285,31 @@
           </el-col>
           <el-col :span="12">
             <el-form-item v-if="form.pkUserId == undefined" label="用户密码" prop="password">
-              <el-input v-model="form.password" placeholder="请输入用户密码" type="password" maxlength="20" show-password/>
+              <el-input
+                v-model="form.password"
+                placeholder="请输入用户密码"
+                type="password"
+                maxlength="20"
+                show-password
+              />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="用户性别">
-              <el-select v-model="form.sex" placeholder="请选择">
-                <el-option
-                  v-for="item in dict.type.sys_user_sex"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
+            <el-form-item label="用户性别" prop="sex">
+              <el-radio-group v-model="form.sex">
+                <el-radio :label="1">男</el-radio>
+                <el-radio :label="0">女</el-radio>
+                <el-radio :label="2">未知</el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="状态">
+            <el-form-item label="状态" prop="status">
               <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="item in dict.type.sys_normal_disable"
-                  :key="item.value"
-                  :label="item.value"
-                >{{item.label}}</el-radio>
+                <el-radio :label="1">启用</el-radio>
+                <el-radio :label="0">禁用</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -326,13 +371,21 @@
         drag
       >
         <i class="el-icon-upload"></i>
-        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__text">
+          将文件拖到此处，或
+          <em>点击上传</em>
+        </div>
         <div class="el-upload__tip text-center" slot="tip">
           <div class="el-upload__tip" slot="tip">
-            <el-checkbox v-model="upload.updateSupport" /> 是否更新已经存在的用户数据
+            <el-checkbox v-model="upload.updateSupport" />是否更新已经存在的用户数据
           </div>
           <span>仅允许导入xls、xlsx格式文件。</span>
-          <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;" @click="importTemplate">下载模板</el-link>
+          <el-link
+            type="primary"
+            :underline="false"
+            style="font-size:12px;vertical-align: baseline;"
+            @click="importTemplate"
+          >下载模板</el-link>
         </div>
       </el-upload>
       <div slot="footer" class="dialog-footer">
@@ -345,16 +398,17 @@
 
 <script>
 import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUserStatus } from "@/api/system/user";
+import { deptTreeselect } from "@/api/system/dept";
 import { getToken } from "@/utils/auth";
-import { treeselect } from "@/api/system/dept";
+// 树形选择器
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
   name: "User",
-  dicts: ['sys_normal_disable', 'sys_user_sex'],
+  // dicts: ['sys_normal_disable', 'sys_user_sex'],
   components: { Treeselect },
-  data() {
+  data () {
     return {
       // 遮罩层
       loading: true,
@@ -372,14 +426,14 @@ export default {
       userList: null,
       // 弹出层标题
       title: "",
-      // 部门树选项
-      deptOptions: undefined,
       // 是否显示弹出层
       open: false,
-      // 部门名称
-      deptName: undefined,
       // 日期范围
       dateRange: [],
+      // 部门名称
+      deptName: undefined,
+      // 部门树选项
+      deptOptions: undefined,
       // 岗位选项
       postOptions: [],
       // 角色选项
@@ -387,8 +441,8 @@ export default {
       // 表单参数
       form: {},
       defaultProps: {
-        children: "child",
-        label: "deptName"
+        children: "children",
+        label: "label"
       },
       // 用户导入参数
       upload: {
@@ -409,10 +463,10 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
+        fkDeptId: undefined,
         userName: undefined,
         phone: undefined,
         status: undefined,
-        deptId: undefined
       },
       // 列信息
       columns: [
@@ -459,68 +513,71 @@ export default {
   },
   watch: {
     // 根据名称筛选部门树
-    deptName(val) {
+    deptName (val) {
       this.$refs.tree.filter(val);
     }
   },
-  created() {
+  created () {
     this.getList();
-    this.getTreeselect();
+    this.getDeptTreeselect();
   },
   methods: {
     /** 查询用户列表 */
-    getList() {
+    getList () {
       this.loading = true;
       listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-          this.userList = response.data.records;
-          this.total = response.data.total;
-          this.loading = false;
-        }
+        this.userList = response.data.records;
+        this.total = response.data.total;
+        this.loading = false;
+      }
       );
     },
     /** 查询部门下拉树结构 */
-    getTreeselect() {
-      treeselect().then(response => {
+    getDeptTreeselect () {
+      deptTreeselect().then(response => {
         this.deptOptions = response.data;
       });
     },
+    // 左侧部分数据节点单击筛选事件
+    handleNodeClick (data) {
+      this.queryParams.fkDeptId = data.id;
+      this.getList();
+    },
     // 筛选节点
-    filterNode(value, data) {
+    filterNode (value, data) {
       if (!value) return true;
       return data.deptName.indexOf(value) !== -1;
     },
-    // 节点单击事件
-    handleNodeClick(data) {
-      this.queryParams.deptId = data.pkDeptId;
-      this.getList();
-    },
+
     // 用户状态修改
-    handleStatusChange(row) {
+    handleStatusChange (row) {
       let text = row.status === 0 ? "启用" : "停用";
-      this.$modal.confirm('确认要"' + text + '""' + row.userName + '"用户吗？').then(function() {
+      this.$modal.confirm('确认要"' + text + '""' + row.userName + '"用户吗？').then(function () {
         return changeUserStatus(row.pkUserId, row.status);
       }).then(() => {
         this.$modal.msgSuccess(text + "成功");
-      }).catch(function() {
+      }).catch(function () {
         row.status = row.status === 1 ? 0 : 1;
       });
     },
     // 取消按钮
-    cancel() {
+    cancel () {
       this.open = false;
       this.reset();
     },
     // 表单重置
-    reset() {
+    reset () {
       this.form = {
         pkUserId: undefined,
-        deptId: undefined,
+        fkDeptId: undefined,
         userName: undefined,
         nickName: undefined,
         password: undefined,
         phone: undefined,
         email: undefined,
-        sex: undefined,
+        //性别默认 2未知
+        sex: 2,
+        //状态默认 1启用
         status: 1,
         remark: undefined,
         postIds: [],
@@ -529,24 +586,24 @@ export default {
       this.resetForm("form");
     },
     /** 搜索按钮操作 */
-    handleQuery() {
+    handleQuery () {
       this.queryParams.pageNum = 1;
       this.getList();
     },
-    /** 重置按钮操作 */
-    resetQuery() {
+    /** 搜索重置按钮操作 注意：不会清除部分条件*/
+    resetQuery () {
       this.dateRange = [];
       this.resetForm("queryForm");
       this.handleQuery();
     },
     // 多选框选中数据
-    handleSelectionChange(selection) {
+    handleSelectionChange (selection) {
       this.ids = selection.map(item => item.pkUserId);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
     // 更多操作触发
-    handleCommand(command, row) {
+    handleCommand (command, row) {
       switch (command) {
         case "handleResetPwd":
           this.handleResetPwd(row);
@@ -559,9 +616,13 @@ export default {
       }
     },
     /** 新增按钮操作 */
-    handleAdd() {
+    handleAdd () {
+      //重置表单
       this.reset();
-      this.getTreeselect();
+      //如果有部门树形选择器数据，则不再请求
+      if (this.deptOptions == "undefined") {
+        this.getDeptTreeselect();
+      }
       getUser().then(response => {
         this.postOptions = response.posts;
         this.roleOptions = response.roles;
@@ -570,9 +631,12 @@ export default {
       });
     },
     /** 修改按钮操作 */
-    handleUpdate(row) {
+    handleUpdate (row) {
       this.reset();
-      this.getTreeselect();
+      //如果有部门树形选择器数据，则不再请求
+      if (this.deptOptions == "undefined") {
+        this.getDeptTreeselect();
+      }
       const pkUserId = row.pkUserId || this.ids;
       getUser(pkUserId).then(response => {
         this.form = response.data;
@@ -586,7 +650,7 @@ export default {
       });
     },
     /** 重置密码按钮操作 */
-    handleResetPwd(row) {
+    handleResetPwd (row) {
       this.$prompt('请输入"' + row.userName + '"的新密码', "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -594,18 +658,18 @@ export default {
         inputPattern: /^.{5,20}$/,
         inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
       }).then(({ value }) => {
-          resetUserPwd(row.pkUserId, value).then(response => {
-            this.$modal.msgSuccess("修改成功，新密码是：" + value);
-          });
-        }).catch(() => {});
+        resetUserPwd(row.pkUserId, value).then(response => {
+          this.$modal.msgSuccess("修改成功，新密码是：" + value);
+        });
+      }).catch(() => { });
     },
     /** 分配角色操作 */
-    handleAuthRole: function(row) {
+    handleAuthRole: function (row) {
       const pkUserId = row.pkUserId;
       this.$router.push("/system/user-auth/role/" + pkUserId);
     },
     /** 提交按钮 */
-    submitForm: function() {
+    submitForm: function () {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.pkUserId != undefined) {
@@ -625,37 +689,37 @@ export default {
       });
     },
     /** 删除按钮操作 */
-    handleDelete(row) {
+    handleDelete (row) {
       const userIds = row.pkUserId || this.ids;
-      this.$modal.confirm('是否确认删除用户编号为"' + userIds + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除用户编号为"' + userIds + '"的数据项？').then(function () {
         return delUser(userIds);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => { });
     },
     /** 导出按钮操作 */
-    handleExport() {
+    handleExport () {
       this.download('system/user/export', {
         ...this.queryParams
       }, `user_${new Date().getTime()}.xlsx`)
     },
     /** 导入按钮操作 */
-    handleImport() {
+    handleImport () {
       this.upload.title = "用户导入";
       this.upload.open = true;
     },
     /** 下载模板操作 */
-    importTemplate() {
+    importTemplate () {
       this.download('system/user/importTemplate', {
       }, `user_template_${new Date().getTime()}.xlsx`)
     },
     // 文件上传中处理
-    handleFileUploadProgress(event, file, fileList) {
+    handleFileUploadProgress (event, file, fileList) {
       this.upload.isUploading = true;
     },
     // 文件上传成功处理
-    handleFileSuccess(response, file, fileList) {
+    handleFileSuccess (response, file, fileList) {
       this.upload.open = false;
       this.upload.isUploading = false;
       this.$refs.upload.clearFiles();
@@ -663,7 +727,7 @@ export default {
       this.getList();
     },
     // 提交上传文件
-    submitFileForm() {
+    submitFileForm () {
       this.$refs.upload.submit();
     }
   }

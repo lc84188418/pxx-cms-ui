@@ -8,17 +8,13 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <!-- 用query获取值 -->
-      <p>提示：{{this.$route.query.fkStreetId}}</p>
-      <p>提示2：{{parentId}}</p>
-      <el-form-item label="所属街道" prop="parentId">
+      <el-form-item label="所属街道" prop="fkStreetId">
         <el-input
           v-model="queryParams.fkStreetId"
-          value="this.$route.query.fkStreetId"
           placeholder="请输入街道编码"
           clearable
           size="small"
-          :disabled="!isParentLink"
+          :disabled="isParentLink"
         />
       </el-form-item>
       <el-form-item label="乡镇名称" prop="countyName">
@@ -108,7 +104,15 @@
     </el-row>
 
     <!-- 列表数据 -->
-    <el-table v-loading="loading" :data="countyList" @selection-change="handleSelectionChange" style="width: 100%" height="650" :border="true" :cell-style="{padding:'5px'}">
+    <el-table
+      v-loading="loading"
+      :data="countyList"
+      @selection-change="handleSelectionChange"
+      style="width: 100%"
+      height="650"
+      :border="true"
+      :cell-style="{padding:'5px'}"
+    >
       <el-table-column type="selection" align="center" width="50" />
       <el-table-column
         label="乡镇编号"
@@ -254,8 +258,6 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      //父级ID
-      parentId: undefined,
       //是否是从上级跳转过来的,默认否
       isParentLink: false,
       // 街道表格数据
@@ -269,7 +271,8 @@ export default {
       // 查询参数
       queryParams: {
         current: 1,
-        size: 10,
+        size: 15,
+        fkStreetId: undefined,
         zoningCode: undefined,
         countyName: undefined,
         status: undefined
@@ -297,16 +300,16 @@ export default {
     };
   },
   created () {
+    //先拿到父级ID
+    this.queryParams.fkStreetId = this.$route.query.pId;
+    if (this.queryParams.fkStreetId == "undefined") {
+      this.isParentLink = false
+    } else if (this.queryParams.fkStreetId > 0) {
+      this.isParentLink = true
+    }
+    //再请求数据
     this.getList();
-    // this.parentId = this.$router.query.fkStreetId
-    // console.log(this.parentId);
   },
-  // components: {
-  //   parentId: this.$router.query.fkStreetId
-  // },
-  // computed: {
-  //   parentId: this.$router.query.fkStreetId
-  // },
   methods: {
     /** 查询乡镇列表 */
     getList () {
