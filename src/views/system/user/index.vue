@@ -124,7 +124,15 @@
           <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
         </el-row>
 
-        <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
+        <el-table
+          v-loading="loading"
+          :data="userList"
+          @selection-change="handleSelectionChange"
+          style="width: 100%"
+          height="650"
+          :border="true"
+          :cell-style="{padding:'5px'}"
+        >
           <el-table-column type="selection" align="center" width="50" />
           <el-table-column
             label="用户编号"
@@ -333,9 +341,9 @@
               <el-select v-model="form.roleIds" multiple placeholder="请选择">
                 <el-option
                   v-for="item in roleOptions"
-                  :key="item.roleId"
-                  :label="item.roleName"
-                  :value="item.roleId"
+                  :key="item.id"
+                  :label="item.label"
+                  :value="item.id"
                   :disabled="item.status == 1"
                 ></el-option>
               </el-select>
@@ -397,7 +405,7 @@
 </template>
 
 <script>
-import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUserStatus } from "@/api/system/user";
+import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUserStatus, getUserAddShow } from "@/api/system/user";
 import { deptTreeselect } from "@/api/system/dept";
 import { getToken } from "@/utils/auth";
 // 树形选择器
@@ -590,7 +598,7 @@ export default {
       this.queryParams.pageNum = 1;
       this.getList();
     },
-    /** 搜索重置按钮操作 注意：不会清除部分条件*/
+    /** 搜索重置按钮操作 注意：不会清除部门条件*/
     resetQuery () {
       this.dateRange = [];
       this.resetForm("queryForm");
@@ -623,9 +631,9 @@ export default {
       if (this.deptOptions == "undefined") {
         this.getDeptTreeselect();
       }
-      getUser().then(response => {
+      getUserAddShow().then(response => {
         this.postOptions = response.posts;
-        this.roleOptions = response.roles;
+        this.roleOptions = response.data.roles;
         this.open = true;
         this.title = "添加用户";
       });

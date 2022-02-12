@@ -26,6 +26,12 @@ export function addUser(data) {
     data: data
   })
 }
+export function getUserAddShow() {
+  return request({
+    url: '/system/user/addShow',
+    method: 'get'
+  })
+}
 
 // 修改用户
 export function updateUser(data) {
