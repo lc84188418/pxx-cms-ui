@@ -95,8 +95,17 @@
 
     <!-- 列表数据 fixed="left"-->
     <!-- <el-table v-loading="loading" :data="provinceList" @selection-change="handleSelectionChange" style="width: 100%" height="650" border=true :cell-style="{padding:'5px'}"> -->
-    <el-table v-loading="loading" :data="provinceList" @selection-change="handleSelectionChange" class="dictionary-xzqh-table" style="width: 100%" height="650" :border="true" :cell-style="{padding:'5px'}">
-      <el-table-column type="selection" align="center" width="50"/>
+    <el-table
+      v-loading="loading"
+      :data="provinceList"
+      @selection-change="handleSelectionChange"
+      class="dictionary-xzqh-table"
+      style="width: 100%"
+      height="650"
+      :border="true"
+      :cell-style="{padding:'5px'}"
+    >
+      <el-table-column type="selection" align="center" width="50" />
       <el-table-column
         label="省份编号"
         align="center"
@@ -135,14 +144,15 @@
         prop="provinceCapital"
         v-if="columns[4].visible"
       />
+      <el-table-column label="首字母" align="center" key="szm" prop="szm" v-if="columns[5].visible" />
       <el-table-column
-        label="首字母"
+        label="排序"
         align="center"
-        key="szm"
-        prop="szm"
-        v-if="columns[5].visible"
+        key="sort"
+        prop="sort"
+        v-if="columns[6].visible"
+        width="60"
       />
-      <el-table-column label="排序" align="center" key="sort" prop="sort" v-if="columns[6].visible" width="60"/>
       <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[7].visible">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
@@ -360,7 +370,7 @@ export default {
     },
     // 省份状态修改
     handleStatusChange (row) {
-      let text = row.status === 0 ? "启用" : "停用";
+      let text = row.status === 1 ? "启用" : "停用";
       this.$modal.confirm('确认要"' + text + '""' + row.provinceName + '"省份吗？').then(function () {
         return changeProvinceStatus(row.pkProvinceId, row.status);
       }).then(() => {
@@ -431,10 +441,10 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.dictionary-xzqh-table{
+.dictionary-xzqh-table {
   width: 100% !important;
-  height:650px !important;
-  border:true !important;
+  height: 650px !important;
+  border: true !important;
   // font-size: 30px
   // padding:5px
 }

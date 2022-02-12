@@ -416,7 +416,7 @@ export default {
     },
     // 城市状态修改
     handleStatusChange (row) {
-      let text = row.status === 0 ? "启用" : "停用";
+      let text = row.status === 1 ? "启用" : "停用";
       this.$modal.confirm('确认要"' + text + '""' + row.cityName + '"城市吗？').then(function () {
         return changeCityStatus(row.pkCityId, row.status);
       }).then(() => {

@@ -467,7 +467,7 @@ export default {
 
     // 角色状态修改
     handleStatusChange (row) {
-      let text = row.status === 0 ? "启用" : "停用";
+      let text = row.status === 1 ? "启用" : "停用";
       this.$modal.confirm('确认要"' + text + '""' + row.roleName + '"角色吗？').then(function () {
         return changeRoleStatus(row.pkRoleId, row.status);
       }).then(() => {

@@ -400,7 +400,7 @@ export default {
     },
     // 街道状态修改
     handleStatusChange (row) {
-      let text = row.status === 0 ? "启用" : "停用";
+      let text = row.status === 1 ? "启用" : "停用";
       this.$modal.confirm('确认要"' + text + '""' + row.streetName + '"街道吗？').then(function () {
         return changeStreetStatus(row.pkStreetId, row.status);
       }).then(() => {

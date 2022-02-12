@@ -551,7 +551,7 @@ export default {
 
     // 用户状态修改
     handleStatusChange (row) {
-      let text = row.status === 0 ? "启用" : "停用";
+      let text = row.status === 1 ? "启用" : "停用";
       this.$modal.confirm('确认要"' + text + '""' + row.userName + '"用户吗？').then(function () {
         return changeUserStatus(row.pkUserId, row.status);
       }).then(() => {

@@ -41,14 +41,17 @@
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
       <el-table-column prop="deptName" label="部门名称" :show-overflow-tooltip="true" width="160"></el-table-column>
-
+      <el-table-column prop="leader" label="领导" align="center"></el-table-column>
+      <el-table-column prop="phone" label="电话" align="center"></el-table-column>
+      <el-table-column prop="email" label="邮箱" align="center"></el-table-column>
+      <el-table-column prop="email" label="人数" align="center"></el-table-column>
       <el-table-column prop="sort" label="排序" align="center" width="60"></el-table-column>
       <el-table-column prop="status" label="状态" width="60">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
-            :active-value="1"
-            :inactive-value="0"
+            active-value="1"
+            inactive-value="0"
             @change="handleStatusChange(scope.row)"
           ></el-switch>
         </template>
@@ -92,13 +95,27 @@
               <el-input v-model="form.deptName" placeholder="请输入部门名称" />
             </el-form-item>
           </el-col>
-
           <el-col :span="12">
-            <el-form-item label="显示排序" prop="sort">
-              <el-input-number v-model="form.sort" controls-position="right" :min="1" />
+            <el-form-item label="排序" prop="sort">
+              <el-input-number v-model="form.sort" controls-position="right" :min="0" />
             </el-form-item>
           </el-col>
-          <el-col>
+          <el-col :span="12">
+            <el-form-item label="负责人" prop="leader">
+              <el-input v-model="form.leader" placeholder="请输入负责人" maxlength="20" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="联系电话" prop="phone">
+              <el-input v-model="form.phone" placeholder="请输入联系电话" maxlength="11" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="邮箱" prop="email">
+              <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item label="备注" prop="remark">
               <el-input v-model="form.remark" type="textarea" />
             </el-form-item>
@@ -114,13 +131,14 @@
 </template>
 
 <script>
-import { listDept, getDept, delDept, addDept, updateDept, changeDeptStatus } from "@/api/system/dept";
+import { listDept, getDept, delDept, addDept, updateDept, changeDeptStatus, listDeptExcludeChild } from "@/api/system/dept";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import IconSelect from "@/components/IconSelect";
 
 export default {
   name: "Dept",
-  components: { Treeselect },
+  components: { Treeselect, IconSelect },
   data () {
     return {
       // 遮罩层
@@ -150,7 +168,7 @@ export default {
       rules: {
         deptName: [
           { required: true, message: "部门名称不能为空", trigger: "blur" }
-        ]
+        ],
       }
     };
   },
@@ -158,12 +176,15 @@ export default {
     this.getList();
   },
   methods: {
+    // 选择图标
+    selected (name) {
+      this.form.icon = name;
+    },
     /** 查询部门列表 */
     getList () {
       this.loading = true;
       listDept(this.queryParams).then(response => {
         this.deptList = this.handleTree(response.data, "pkDeptId");
-        console.log(this.deptList);
         this.loading = false;
       });
     },
@@ -196,7 +217,7 @@ export default {
     },
     // 部门状态修改
     handleStatusChange (row) {
-      let text = row.status === 1 ? "启用" : "停用";
+      let text = row.status === 0 ? "启用" : "停用";
       if (row.parentId === 0) {
         text = text + "顶级目录"
       }
