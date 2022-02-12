@@ -196,8 +196,22 @@
           </span>
           <el-input v-model="form.roleKey" placeholder="请输入权限字符" />
         </el-form-item>
-        <el-form-item label="过期时间" prop="expireTime">
-          <el-input v-model="form.expireTime" placeholder="空 代表永不过期" />
+        <el-form-item prop="expireTime">
+          <span slot="label">
+            <el-tooltip content="空值代表永不过期" placement="top">
+              <i class="el-icon-question"></i>
+            </el-tooltip>过期时间
+          </span>
+          <div class="block">
+            <el-date-picker
+              v-model="form.expireTime"
+              type="datetime"
+              placeholder="选择日期时间"
+              align="right"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              :picker-options="pickerOptions"
+            ></el-date-picker>
+          </div>
         </el-form-item>
         <el-form-item label="顺序" prop="sort">
           <el-input-number v-model="form.sort" controls-position="right" :min="1" />
@@ -361,6 +375,31 @@ export default {
           label: "本部门及以下数据权限"
         },
       ],
+      // 日期快捷选项
+      pickerOptions: {
+        shortcuts: [{
+          text: '明天',
+          onClick (picker) {
+            const date = new Date();
+            date.setTime(date.getTime() + 3600 * 1000 * 24);
+            picker.$emit('pick', date);
+          }
+        }, {
+          text: '一周后',
+          onClick (picker) {
+            const date = new Date();
+            date.setTime(date.getTime() + 3600 * 1000 * 24 * 7);
+            picker.$emit('pick', date);
+          }
+        }, {
+          text: '30日后',
+          onClick (picker) {
+            const date = new Date();
+            date.setTime(date.getTime() + 3600 * 1000 * 24 * 30);
+            picker.$emit('pick', date);
+          }
+        }]
+      },
       // 表单校验
       rules: {
         roleName: [
@@ -480,6 +519,9 @@ export default {
     submitForm: function () {
       this.$refs["form"].validate(valid => {
         if (valid) {
+          //转化一下时间
+          console.log(this.form.expireTime);
+          // this.form.expireTime = parseTime(this.form.expireTime);
           if (this.form.pkRoleId != undefined) {
             updateRole(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");

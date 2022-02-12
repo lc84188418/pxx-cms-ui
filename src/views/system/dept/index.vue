@@ -40,8 +40,11 @@
       :default-expand-all="isExpandAll"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
-      <el-table-column prop="deptName" label="部门名称" :show-overflow-tooltip="true" width="160"></el-table-column>
-
+      <el-table-column prop="deptName" label="部门名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="leader" label="领导" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="phone" label="电话" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="email" label="邮箱" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="num" label="部门人数" align="center" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="sort" label="排序" align="center" width="60"></el-table-column>
       <el-table-column prop="status" label="状态" width="60">
         <template slot-scope="scope">
@@ -92,10 +95,32 @@
               <el-input v-model="form.deptName" placeholder="请输入部门名称" />
             </el-form-item>
           </el-col>
-
+          <el-col :span="12">
+            <el-form-item label="领导" prop="leader">
+              <el-input v-model="form.leader" placeholder="请输入部门领导" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="电话" prop="phone">
+              <el-input v-model="form.phone" placeholder="请输入部门电话" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="邮箱" prop="email">
+              <el-input v-model="form.email" placeholder="请输入部门邮箱" />
+            </el-form-item>
+          </el-col>
           <el-col :span="12">
             <el-form-item label="显示排序" prop="sort">
               <el-input-number v-model="form.sort" controls-position="right" :min="1" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="状态" prop="status">
+              <el-radio-group v-model="form.status">
+                <el-radio :label="1">启用</el-radio>
+                <el-radio :label="0">禁用</el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col>
@@ -180,23 +205,17 @@ export default {
     },
     /** 查询部门下拉树结构 */
     getTreeselect () {
-      if (this.deptList.length > 0) {
+      listDept().then(response => {
         this.deptOptions = [];
         const dept = { pkDeptId: 0, deptName: '主类目', children: [] };
-        dept.children = this.deptList;
+        dept.children = this.handleTree(response.data, "pkDeptId");
         this.deptOptions.push(dept);
-      } else {
-        listDept().then(response => {
-          this.deptOptions = [];
-          const dept = { pkDeptId: 0, deptName: '主类目', children: [] };
-          dept.children = this.handleTree(response.data, "pkDeptId");
-          this.deptOptions.push(dept);
-        });
-      }
+      });
     },
     // 部门状态修改
     handleStatusChange (row) {
       let text = row.status === 1 ? "启用" : "停用";
+      const confirmMsg = "";
       if (row.parentId === 0) {
         text = text + "顶级目录"
       }

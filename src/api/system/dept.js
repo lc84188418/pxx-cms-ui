@@ -59,6 +59,18 @@ export function updateDept(data) {
   })
 }
 
+// 修改部门状态
+export function changeDeptStatus(pkDeptId, status) {
+  const data = {
+    pkDeptId,
+    status
+  }
+  return request({
+    url: '/system/dept',
+    method: 'put',
+    data: data
+  })
+}
 // 删除部门
 export function delDept(deptId) {
   return request({
