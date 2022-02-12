@@ -12,6 +12,11 @@ git push
 # 拉代码
 git pull
 
+#其他git操作
+#查询某文件提交记录 如 index.vue
+进入文件所在目录后 git log index.vue
+
+
 # 进入项目目录
 cd pxx-cms-ui
 

@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 查询角色列表
 export function listRole(query) {
   return request({
-    url: '/system/role/list',
+    url: '/system/role',
     method: 'get',
     params: query
   })
@@ -45,13 +45,13 @@ export function dataScope(data) {
 }
 
 // 角色状态修改
-export function changeRoleStatus(roleId, status) {
+export function changeRoleStatus(pkRoleId, status) {
   const data = {
-    roleId,
+    pkRoleId,
     status
   }
   return request({
-    url: '/system/role/changeStatus',
+    url: '/system/role',
     method: 'put',
     data: data
   })
@@ -106,5 +106,13 @@ export function authUserSelectAll(data) {
     url: '/system/role/authUser/selectAll',
     method: 'put',
     params: data
+  })
+}
+
+// 查看角色已授权分配的菜单
+export function getRoleAuthPerms(roleId) {
+  return request({
+    url: '/system/role/distribute/menu/' + roleId,
+    method: 'get'
   })
 }
