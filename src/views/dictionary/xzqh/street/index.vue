@@ -4,6 +4,7 @@
     <el-form
       :model="queryParams"
       ref="queryForm"
+      :rules="queryRoles"
       :inline="true"
       v-show="showSearch"
       label-width="68px"
@@ -14,6 +15,7 @@
           placeholder="请输入区域编码"
           clearable
           size="small"
+          maxlength="5"
           :disabled="isParentLink"
         />
       </el-form-item>
@@ -110,7 +112,7 @@
       style="width: 100%"
       height="650"
       :border="true"
-      :cell-style="{padding:'5px'}"
+      :cell-style="{padding:'1px'}"
     >
       <el-table-column type="selection" align="center" width="50" />
       <el-table-column
@@ -314,6 +316,16 @@ export default {
         streetName: [
           { required: true, message: "街道名称不能为空", trigger: "blur" }
         ]
+      },
+            // 查询表单校验
+      queryRoles: {
+        fkAreaId: [
+          {
+            pattern: /^[0-9]*$/,
+            message: "请输入纯数字的编码",
+            trigger: "blur"
+          }
+        ]
       }
     };
   },
@@ -362,10 +374,14 @@ export default {
       };
       this.resetForm("form");
     },
-    /** 搜索按钮操作 */
-    handleQuery () {
-      this.queryParams.current = 1;
-      this.getList();
+    /** 搜索按钮 */
+    handleQuery: function () {
+      this.$refs["queryForm"].validate(valid => {
+        if (valid) {
+          this.queryParams.current = 1;
+          this.getList();
+        }
+      });
     },
     /** 重置按钮操作 */
     resetQuery () {

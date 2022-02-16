@@ -5,6 +5,7 @@
       :model="queryParams"
       ref="queryForm"
       :inline="true"
+      :rules="queryRoles"
       v-show="showSearch"
       label-width="68px"
     >
@@ -14,6 +15,7 @@
           placeholder="请输入省份编码"
           clearable
           size="small"
+          maxlength="4"
           :disabled="isParentLink"
         />
       </el-form-item>
@@ -314,6 +316,16 @@ export default {
         fkCityId: [
           { required: false, message: "所属城市不能为空", trigger: "blur" }
         ]
+      },
+      // 查询表单校验
+      queryRoles: {
+        fkCityId: [
+          {
+            pattern: /^[0-9]*$/,
+            message: "请输入纯数字的编码",
+            trigger: "blur"
+          }
+        ]
       }
     };
   },
@@ -364,10 +376,14 @@ export default {
       };
       this.resetForm("form");
     },
-    /** 搜索按钮操作 */
-    handleQuery () {
-      this.queryParams.current = 1;
-      this.getList();
+    /** 搜索按钮 */
+    handleQuery: function () {
+      this.$refs["queryForm"].validate(valid => {
+        if (valid) {
+          this.queryParams.current = 1;
+          this.getList();
+        }
+      });
     },
     /** 重置按钮操作 */
     resetQuery () {
