@@ -31,6 +31,7 @@
         <el-form
           :model="queryParams"
           ref="queryForm"
+          :rules="queryRoles"
           :inline="true"
           v-show="showSearch"
           label-width="68px"
@@ -51,6 +52,7 @@
               placeholder="请输入手机号码"
               clearable
               size="small"
+              :maxlength="11"
               style="width: 240px"
               @keyup.enter.native="handleQuery"
             />
@@ -516,6 +518,16 @@ export default {
             trigger: "blur"
           }
         ]
+      },
+      // 查询表单校验
+      queryRoles: {
+        phone: [
+          {
+            pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
+            message: "请输入正确的手机号码",
+            trigger: "blur"
+          }
+        ]
       }
     };
   },
@@ -594,9 +606,13 @@ export default {
       this.resetForm("form");
     },
     /** 搜索按钮操作 */
-    handleQuery () {
-      this.queryParams.pageNum = 1;
-      this.getList();
+    handleQuery: function () {
+      this.$refs["queryForm"].validate(valid => {
+        if (valid) {
+          this.queryParams.pageNum = 1;
+          this.getList();
+        }
+      });
     },
     /** 搜索重置按钮操作 注意：不会清除部门条件*/
     resetQuery () {

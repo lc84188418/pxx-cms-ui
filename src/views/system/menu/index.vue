@@ -41,7 +41,6 @@
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
       <el-table-column prop="menuName" label="菜单名称" :show-overflow-tooltip="true" width="160"></el-table-column>
-      <el-table-column prop="menuPosition" label="菜单位置" align="center" width="80"></el-table-column>
       <el-table-column prop="icon" label="图标" align="center" width="100">
         <template slot-scope="scope">
           <svg-icon :icon-class="scope.row.icon" />
@@ -127,18 +126,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="菜单位置" prop="menuPosition">
-              <el-input v-model="form.menuPosition" placeholder="菜单位置(up,down,left,right)" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
             <el-form-item label="菜单名称" prop="menuName">
               <el-input v-model="form.menuName" placeholder="请输入菜单名称" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="显示名称" prop="showName">
-              <el-input v-model="form.showName" placeholder="请输入菜单显示名称" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -154,8 +143,8 @@
                 </el-tooltip>是否外链
               </span>
               <el-radio-group v-model="form.isFrame">
-                <el-radio label="1">是</el-radio>
-                <el-radio label="0">否</el-radio>
+                <el-radio :label="1">是</el-radio>
+                <el-radio :label="0">否</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -196,7 +185,7 @@
             <el-form-item>
               <el-input v-model="form.query" placeholder="请输入路由参数" maxlength="255" />
               <span slot="label">
-                <el-tooltip content="访问路由的默认传递参数，如：`{"id": 1, "name": "ry"}`" placement="top">
+                <el-tooltip content="访问路由的默认传递参数，如：`{'id': 1, 'name': 'ry'}`" placement="top">
                   <i class="el-icon-question"></i>
                 </el-tooltip>路由参数
               </span>
@@ -210,8 +199,8 @@
                 </el-tooltip>是否缓存
               </span>
               <el-radio-group v-model="form.isCache">
-                <el-radio label="1">缓存</el-radio>
-                <el-radio label="0">不缓存</el-radio>
+                <el-radio :label="1">缓存</el-radio>
+                <el-radio :label="0">不缓存</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -301,9 +290,6 @@ export default {
       rules: {
         menuName: [
           { required: true, message: "菜单名称不能为空", trigger: "blur" }
-        ],
-        showName: [
-          { required: true, message: "菜单显示名称不能为空", trigger: "blur" }
         ],
         perms: [
           { required: true, message: "权限标识不能为空", trigger: "blur" }

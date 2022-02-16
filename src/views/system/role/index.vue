@@ -109,13 +109,19 @@
       <el-table-column
         label="权限范围"
         align="center"
-        key="dataScope"
         prop="dataScope"
-        :show-overflow-tooltip="true"
-      />
-      <el-table-column label="过期时间" align="center" prop="expireTime">
+      >
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.expireTime) }}</span>
+          <span v-if="scope.row.dataScope == 1">全部</span>
+          <span v-if="scope.row.dataScope == 2">自定义</span>
+          <span v-if="scope.row.dataScope == 3">本部门</span>
+          <span v-if="scope.row.dataScope == 4">本部门及以下</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="有效期至" align="center" prop="expireTime">
+        <template slot-scope="scope">
+          <span v-if="scope.row.expireTime == null">永久有效</span>
+          <span v-if="scope.row.expireTime != null">{{ parseTime(scope.row.expireTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="创建人" align="center" prop="createBy" />
@@ -188,7 +194,7 @@
         <el-form-item prop="roleKey">
           <span slot="label">
             <el-tooltip
-              content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasRole('admin')`)"
+              content="控制器中定义的权限字符，全英文小写，如：@PreAuthorize(`@ss.hasRole('admin')`)"
               placement="top"
             >
               <i class="el-icon-question"></i>
@@ -200,7 +206,7 @@
           <span slot="label">
             <el-tooltip content="空值代表永不过期" placement="top">
               <i class="el-icon-question"></i>
-            </el-tooltip>过期时间
+            </el-tooltip>有效期至
           </span>
           <div class="block">
             <el-date-picker
@@ -406,7 +412,8 @@ export default {
           { required: true, message: "角色名称不能为空", trigger: "blur" }
         ],
         roleKey: [
-          { required: true, message: "权限字符不能为空", trigger: "blur" }
+          { required: true, message: "权限字符不能为空", trigger: "blur" },
+          { pattern: /^[a-z]+$/, message: "请输入正确的权限字符（全英文小写）", trigger: "blur" }
         ]
       }
     };
