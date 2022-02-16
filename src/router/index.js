@@ -66,6 +66,12 @@ export const constantRoutes = [
         meta: { title: '部门管理', icon: 'dashboard', affix: true }
       },
       {
+        path: 'system/post',
+        component: (resolve) => require(['@/views/system/post'], resolve),
+        name: 'post',
+        meta: { title: '岗位管理', icon: 'dashboard', affix: true }
+      },
+      {
         path: 'system/menu',
         component: (resolve) => require(['@/views/system/menu'], resolve),
         name: 'menu',
