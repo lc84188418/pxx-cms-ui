@@ -77,6 +77,13 @@ export const constantRoutes = [
         name: 'menu',
         meta: { title: '权限管理', icon: 'dashboard', affix: true }
       },
+      
+      {
+        path: 'system/param',
+        component: (resolve) => require(['@/views/system/param'], resolve),
+        name: 'param',
+        meta: { title: '参数配置', icon: 'dashboard', affix: true }
+      },
       {
         path: 'dictionary/province',
         component: (resolve) => require(['@/views/dictionary/xzqh/province'], resolve),
