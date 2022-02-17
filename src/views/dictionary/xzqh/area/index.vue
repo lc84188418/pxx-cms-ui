@@ -331,6 +331,7 @@ export default {
   },
   created () {
     //先拿到父级ID
+    this.queryParams.fkCityId = undefined;
     this.queryParams.fkCityId = this.$route.query.pId;
     if (this.queryParams.fkCityId == "undefined") {
       this.isParentLink = false
@@ -460,7 +461,7 @@ export default {
     handleChildren (row) {
       const areaId = row.pkAreaId
       this.$router.push({
-        path: '/dictionary/street',
+        path: '/dictionary/xzqh/street',
         query: {
           pId: areaId
         }

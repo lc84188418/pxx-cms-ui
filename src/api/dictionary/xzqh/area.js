@@ -4,7 +4,7 @@ import { praseStrEmpty } from "@/utils/ruoyi";
 // 查询区域列表
 export function listArea(query) {
   return request({
-    url: '/dictionary/area',
+    url: '/dictionary/xzqh/area',
     method: 'get',
     params: query
   })
@@ -13,7 +13,7 @@ export function listArea(query) {
 // 查询区域详细
 export function getArea(areaId) {
   return request({
-    url: '/dictionary/area/' + praseStrEmpty(areaId),
+    url: '/dictionary/xzqh/area/' + praseStrEmpty(areaId),
     method: 'get'
   })
 }
@@ -21,7 +21,7 @@ export function getArea(areaId) {
 // 新增区域
 export function addArea(data) {
   return request({
-    url: '/dictionary/area',
+    url: '/dictionary/xzqh/area',
     method: 'post',
     data: data
   })
@@ -30,7 +30,7 @@ export function addArea(data) {
 // 修改区域
 export function updateArea(data) {
   return request({
-    url: '/dictionary/area',
+    url: '/dictionary/xzqh/area',
     method: 'put',
     data: data
   })
@@ -39,7 +39,7 @@ export function updateArea(data) {
 //删除区域
 export function delArea(areaIds) {
   return request({
-    url: '/dictionary/area/' + areaIds,
+    url: '/dictionary/xzqh/area/' + areaIds,
     method: 'delete'
   })
 }
@@ -51,7 +51,7 @@ export function changeAreaStatus(pkAreaId, status) {
     status
   }
   return request({
-    url: '/dictionary/area',
+    url: '/dictionary/xzqh/area',
     method: 'put',
     data: data
   })

@@ -4,7 +4,7 @@ import { praseStrEmpty } from "@/utils/ruoyi";
 // 查询省份列表
 export function listProvince(query) {
   return request({
-    url: '/dictionary/province',
+    url: '/dictionary/xzqh/province',
     method: 'get',
     params: query
   })
@@ -13,7 +13,7 @@ export function listProvince(query) {
 // 查询省份详细
 export function getProvince(provinceId) {
   return request({
-    url: '/dictionary/province/' + praseStrEmpty(provinceId),
+    url: '/dictionary/xzqh/province/' + praseStrEmpty(provinceId),
     method: 'get'
   })
 }
@@ -21,7 +21,7 @@ export function getProvince(provinceId) {
 // 新增省份
 export function addProvince(data) {
   return request({
-    url: '/dictionary/province',
+    url: '/dictionary/xzqh/province',
     method: 'post',
     data: data
   })
@@ -30,7 +30,7 @@ export function addProvince(data) {
 // 修改省份
 export function updateProvince(data) {
   return request({
-    url: '/dictionary/province',
+    url: '/dictionary/xzqh/province',
     method: 'put',
     data: data
   })
@@ -39,7 +39,7 @@ export function updateProvince(data) {
 //删除省份
 export function delProvince(provinceId) {
   return request({
-    url: '/dictionary/province/' + provinceId,
+    url: '/dictionary/xzqh/province/' + provinceId,
     method: 'delete'
   })
 }
@@ -51,7 +51,7 @@ export function changeProvinceStatus(pkProvinceId, status) {
     status
   }
   return request({
-    url: '/dictionary/province',
+    url: '/dictionary/xzqh/province',
     method: 'put',
     data: data
   })

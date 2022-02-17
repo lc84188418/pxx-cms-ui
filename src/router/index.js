@@ -85,31 +85,31 @@ export const constantRoutes = [
         meta: { title: '参数配置', icon: 'dashboard', affix: true }
       },
       {
-        path: 'dictionary/province',
+        path: 'dictionary/xzqh/province',
         component: (resolve) => require(['@/views/dictionary/xzqh/province'], resolve),
         name: 'province',
         meta: { title: '省份管理', icon: 'dashboard', affix: true }
       },
       {
-        path: 'dictionary/city',
+        path: 'dictionary/xzqh/city',
         component: (resolve) => require(['@/views/dictionary/xzqh/city'], resolve),
         name: 'city',
         meta: { title: '城市管理', icon: 'dashboard', affix: true }
       },
       {
-        path: 'dictionary/area',
+        path: 'dictionary/xzqh/area',
         component: (resolve) => require(['@/views/dictionary/xzqh/area'], resolve),
         name: 'area',
         meta: { title: '区域管理', icon: 'dashboard', affix: true }
       },
       {
-        path: 'dictionary/street',
+        path: 'dictionary/xzqh/street',
         component: (resolve) => require(['@/views/dictionary/xzqh/street'], resolve),
         name: 'street',
         meta: { title: '街道管理', icon: 'dashboard', affix: true }
       },
       {
-        path: 'dictionary/county',
+        path: 'dictionary/xzqh/county',
         component: (resolve) => require(['@/views/dictionary/xzqh/county'], resolve),
         name: 'county',
         meta: { title: '乡镇管理', icon: 'dashboard', affix: true }

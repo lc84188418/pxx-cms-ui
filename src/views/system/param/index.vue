@@ -61,8 +61,8 @@
       <el-table-column type="selection" width="50" align="center" />
       <el-table-column label="参数编码" align="center" prop="configKey" />
       <el-table-column label="参数值" align="center" prop="configValue" />
-      <el-table-column label="参数描述" align="center" prop="configDesc" />
-      <el-table-column label="排序" align="center" prop="sort" />
+      <el-table-column label="参数描述" align="center" prop="configDesc" width="200"/>
+      <el-table-column label="排序" align="center" prop="sort" width="60"/>
       <el-table-column label="创建人" align="center" prop="createBy" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">

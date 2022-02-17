@@ -476,7 +476,7 @@ export default {
     handleChildren (row) {
       const cityId = row.pkCityId
       this.$router.push({
-        path: '/dictionary/area',
+        path: '/dictionary/xzqh/area',
         query: {
           pId: cityId
         }

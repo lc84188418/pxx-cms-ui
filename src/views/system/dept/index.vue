@@ -32,6 +32,7 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
+<!-- 注意此处的树形数据deptList 不能同时含有 children和hasChildren属性-->
     <el-table
       v-if="refreshTable"
       v-loading="loading"
@@ -188,7 +189,6 @@ export default {
       this.loading = true;
       listDept(this.queryParams).then(response => {
         this.deptList = this.handleTree(response.data, "pkDeptId");
-        console.log(this.deptList);
         this.loading = false;
       });
     },

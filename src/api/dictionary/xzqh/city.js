@@ -12,7 +12,7 @@ export function apiCitys() {
 // 查询城市列表
 export function listCity(query) {
   return request({
-    url: '/dictionary/city',
+    url: '/dictionary/xzqh/city',
     method: 'get',
     params: query
   })
@@ -21,7 +21,7 @@ export function listCity(query) {
 // 查询城市详细
 export function getCity(cityId) {
   return request({
-    url: '/dictionary/city/' + praseStrEmpty(cityId),
+    url: '/dictionary/xzqh/city/' + praseStrEmpty(cityId),
     method: 'get'
   })
 }
@@ -29,7 +29,7 @@ export function getCity(cityId) {
 // 新增城市
 export function addCity(data) {
   return request({
-    url: '/dictionary/city',
+    url: '/dictionary/xzqh/city',
     method: 'post',
     data: data
   })
@@ -38,7 +38,7 @@ export function addCity(data) {
 // 修改城市
 export function updateCity(data) {
   return request({
-    url: '/dictionary/city',
+    url: '/dictionary/xzqh/city',
     method: 'put',
     data: data
   })
@@ -47,7 +47,7 @@ export function updateCity(data) {
 //删除城市
 export function delCity(cityId) {
   return request({
-    url: '/dictionary/city/' + cityId,
+    url: '/dictionary/xzqh/city/' + cityId,
     method: 'delete'
   })
 }
@@ -59,7 +59,7 @@ export function changeCityStatus(pkCityId, status) {
     status
   }
   return request({
-    url: '/dictionary/city',
+    url: '/dictionary/xzqh/city',
     method: 'put',
     data: data
   })
