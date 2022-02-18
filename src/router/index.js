@@ -85,6 +85,12 @@ export const constantRoutes = [
         meta: { title: '参数配置', icon: 'dashboard', affix: true }
       },
       {
+        path: 'system/log/operate',
+        component: (resolve) => require(['@/views/system/log/operate'], resolve),
+        name: 'operate',
+        meta: { title: '操作日志', icon: 'dashboard', affix: true }
+      },
+      {
         path: 'dictionary/xzqh/province',
         component: (resolve) => require(['@/views/dictionary/xzqh/province'], resolve),
         name: 'province',
