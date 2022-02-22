@@ -6,8 +6,9 @@ function install() {
   Vue.use(DataDict, {
     metas: {
       '*': {
+        //如果后端字段名有变化，需修改下列的metaLabel和metaValue
         labelField: 'metaLabel',
-        valueField: 'dictValue',
+        valueField: 'metaValue',
         request(dictMeta) {
           return getDicts(dictMeta.type).then(res => res.data)
         },

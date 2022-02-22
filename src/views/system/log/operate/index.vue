@@ -17,60 +17,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="业务类型" prop="businessType">
-        <el-select
-          v-model="queryParams.businessType"
-          placeholder="业务类型"
-          clearable
-          size="small"
-          style="width: 120px"
-        >
-          <el-option label="其它" value="0" />
-          <el-option label="新增" value="1" />
-          <el-option label="修改" value="2" />
-          <el-option label="删除" value="3" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="操作状态" prop="status">
-        <el-select
-          v-model="queryParams.status"
-          placeholder="操作状态"
-          clearable
-          size="small"
-          style="width: 120px"
-        >
-          <el-option label="成功" value="1" />
-          <el-option label="失败" value="0" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="请求方式" prop="requestMethod">
-        <el-select
-          v-model="queryParams.requestMethod"
-          placeholder="请求方式"
-          clearable
-          size="small"
-          style="width: 120px"
-        >
-          <el-option label="查询" value="GET" />
-          <el-option label="修改" value="PUT" />
-          <el-option label="新增" value="POST" />
-          <el-option label="删除" value="DELETE" />
-        </el-select>
-      </el-form-item>
-            <el-form-item label="操作类别" prop="operateType">
-        <el-select
-          v-model="queryParams.operateType"
-          placeholder="操作类别"
-          clearable
-          size="small"
-          style="width: 120px"
-        >
-          <el-option label="其它" value="0" />
-          <el-option label="后台用户" value="1" />
-          <el-option label="PC用户" value="2" />
-          <el-option label="手机端用户" value="3" />
-        </el-select>
-      </el-form-item>
       <el-form-item label="操作说明" prop="operateDesc">
         <el-input
           v-model="queryParams.operateDesc"
@@ -118,13 +64,72 @@
       </el-form-item>
       <el-form-item label="操作版本号" prop="version" label-width="100px">
         <el-input
-          v-model="queryParams.loversioncation"
+          v-model="queryParams.version"
           placeholder="请输入版本号"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="业务类型" prop="businessType">
+        <el-select
+          v-model="queryParams.businessType"
+          placeholder="业务类型"
+          clearable
+          size="small"
+          style="width: 120px"
+        >
+          <el-option
+            v-for="dict in dict.type.sys_oper_type"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="操作状态" prop="status">
+        <el-select
+          v-model="queryParams.status"
+          placeholder="操作状态"
+          clearable
+          size="small"
+          style="width: 120px"
+        >
+          <el-option label="成功" value="1" />
+          <el-option label="失败" value="0" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="请求方式" prop="requestMethod">
+        <el-select
+          v-model="queryParams.requestMethod"
+          placeholder="请求方式"
+          clearable
+          size="small"
+          style="width: 120px"
+        >
+          <el-option
+            v-for="dict in dict.type.request_method"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="操作类别" prop="operateType">
+        <el-select
+          v-model="queryParams.operateType"
+          placeholder="操作类别"
+          clearable
+          size="small"
+          style="width: 120px"
+        >
+          <el-option label="其它" value="0" />
+          <el-option label="后台用户" value="1" />
+          <el-option label="PC用户" value="2" />
+          <el-option label="手机端用户" value="3" />
+        </el-select>
+      </el-form-item>
+      
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -228,10 +233,61 @@
     />
 
     <!-- 查看日志详情对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" label-width="80px">
-        <el-form-item label="省份名称" prop="provinceName">
-          <el-input v-model="form.provinceName" placeholder="请输入省份名称" />
+    <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
+      <el-form ref="form" :model="form">
+        <el-form-item label="日志id:" prop="pkOperateId">
+          <span >{{form.pkOperateId}}</span>
+        </el-form-item>
+        <el-form-item label="模块:" prop="modules">
+          <span >{{form.modules}}</span>
+        </el-form-item>
+        <el-form-item label="业务类型:" prop="businessType">
+          <span >{{form.businessType}}</span>
+        </el-form-item>
+        <el-form-item label="操作说明:" prop="operateDesc">
+          <span >{{form.operateDesc}}</span>
+        </el-form-item>
+        <el-form-item label="方法名称:" prop="method">
+          <span >{{form.method}}</span>
+        </el-form-item>
+        <el-form-item label="请求方式:" prop="requestMethod">
+          <span >{{form.requestMethod}}</span>
+        </el-form-item>
+        <el-form-item label="操作类别:" prop="operateType">
+          <span >{{form.operateType}}</span>
+        </el-form-item>
+        <el-form-item label="操作人员id:" prop="userId">
+          <span >{{form.userId}}</span>
+        </el-form-item>
+        <el-form-item label="操作人员姓名:" prop="userName">
+          <span >{{form.userName}}</span>
+        </el-form-item>
+        <el-form-item label="部门名称:" prop="deptName">
+          <span >{{form.deptName}}</span>
+        </el-form-item>
+        <el-form-item label="请求URL:" prop="url">
+          <span >{{form.url}}</span>
+        </el-form-item>
+        <el-form-item label="主机地址:" prop="ip">
+          <span >{{form.ip}}</span>
+        </el-form-item>
+        <el-form-item label="操作地点:" prop="location">
+          <span >{{form.location}}</span>
+        </el-form-item>
+        <el-form-item label="请求参数:" prop="requestParam">
+          <span >{{form.requestParam}}</span>
+        </el-form-item>
+        <el-form-item label="返回参数:" prop="jsonResult">
+          <span >{{form.jsonResult}}</span>
+        </el-form-item>
+        <el-form-item label="操作状态:" prop="status">
+          <span >{{form.status}}</span>
+        </el-form-item>
+        <el-form-item label="操作时间:" prop="createTime">
+          <span >{{form.createTime}}</span>
+        </el-form-item>
+        <el-form-item label="操作版本号:" prop="version">
+          <span >{{form.version}}</span>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -245,6 +301,7 @@
 import { listOperate, getOperate, delOperate} from "@/api/system/log/operate";
 export default {
   name: "OperateLog",
+  dicts: ['sys_oper_type','request_method'],
   data () {
     return {
       // 遮罩层
