@@ -87,18 +87,6 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="操作状态" prop="status">
-        <el-select
-          v-model="queryParams.status"
-          placeholder="操作状态"
-          clearable
-          size="small"
-          style="width: 120px"
-        >
-          <el-option label="成功" value="1" />
-          <el-option label="失败" value="0" />
-        </el-select>
-      </el-form-item>
       <el-form-item label="请求方式" prop="requestMethod">
         <el-select
           v-model="queryParams.requestMethod"
@@ -129,18 +117,7 @@
           <el-option label="手机端用户" value="3" />
         </el-select>
       </el-form-item>
-      <el-form-item label="创建时间">
-        <el-date-picker
-          v-model="dateRange"
-          size="small"
-          style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        ></el-date-picker>
-      </el-form-item>
+      
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -193,8 +170,8 @@
       <el-table-column
         label="操作类别"
         align="center"
-        key="operateType"
-        prop="operateType"
+        key="exceptionType"
+        prop="exceptionType"
         width="90"
       />
       <el-table-column label="操作人员id" align="center" key="userId" prop="userId"/>
@@ -207,15 +184,6 @@
       <el-table-column label="操作时间" align="center" prop="createTime">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="状态" align="center" width="65">
-        <template slot-scope="scope">
-          <el-switch
-            v-model="scope.row.status"
-            :active-value="1"
-            :inactive-value="0"
-          ></el-switch>
         </template>
       </el-table-column>
       <!-- 操作栏  fixed="right"-->
@@ -309,9 +277,9 @@
 </template>
 
 <script>
-import { listOperate, getOperate, delOperate} from "@/api/system/log/operate";
+import { listException, getException, delException} from "@/api/system/log/exception";
 export default {
-  name: "OperateLog",
+  name: "ExceptionLog",
   dicts: ['sys_oper_type','request_method'],
   data () {
     return {
@@ -327,14 +295,12 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 日志数据
+      // 省份表格数据
       logList: [],
       // 弹出层标题
       title: "",
       // 是否显示编辑的弹出层
       open: false,
-      // 日期范围
-      dateRange: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -348,9 +314,9 @@ export default {
         userName: undefined,
         ip: undefined,
         location: undefined,
-        status: undefined,
         version: undefined,
-        dateParam: undefined,
+        createStartTime: undefined,
+        createEndTime: undefined,
       },
       // 表单参数
       form: {},
@@ -363,7 +329,7 @@ export default {
     /** 查询日志列表 */
     getList () {
       this.loading = true;
-      listOperate(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+      listException(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
         this.logList = response.data.list;
         this.total = response.data.total;
         this.loading = false;
@@ -387,26 +353,26 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange (selection) {
-      this.ids = selection.map(item => item.pkOperateId)
+      this.ids = selection.map(item => item.pkExceptionId)
       this.single = selection.length != 1
       this.multiple = !selection.length
     },
 
     /** 查看详情操作 */
     handleDetail (row) {
-      const pkOperateId = row.pkOperateId
-      getOperate(pkOperateId).then(response => {
+      const pkExceptionId = row.pkExceptionId
+      getException(pkExceptionId).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "操作日志详情";
+        this.title = "异常日志详情";
       });
     },
 
     /** 删除按钮操作，多选删除和单个删除 */
     handleDelete (row) {
-      const operateIds = row.pkOperateId || this.ids;
-      this.$modal.confirm('是否确认删除日志编号为"' + operateIds + '"的数据项？').then(function () {
-        return delOperate(operateIds);
+      const ids = row.pkExceptionId || this.ids;
+      this.$modal.confirm('是否确认删除日志编号为"' + ids + '"的数据项？').then(function () {
+        return delException(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
@@ -415,7 +381,7 @@ export default {
 
     /** 导出按钮操作 */
     handleExport () {
-      this.download('dictionary/operate/export', {
+      this.download('system/log/exception/export', {
         ...this.queryParams
       }, `post_${new Date().getTime()}.xlsx`)
     },

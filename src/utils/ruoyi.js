@@ -53,16 +53,25 @@ export function resetForm(refName) {
 
 // 添加日期范围
 export function addDateRange(params, dateRange, propName) {
+	console.log(params);
+	console.log(propName);
+	const dateParam = {
+		beginTime:undefined,
+		endTime:undefined
+	}
 	let search = params;
-	search.params = typeof (search.params) === 'object' && search.params !== null && !Array.isArray(search.params) ? search.params : {};
+	// search.dateParam = typeof (search.dateParam) === 'object' && search.dateParam !== null && !Array.isArray(search.dateParam) ? search.dateParam : {};
 	dateRange = Array.isArray(dateRange) ? dateRange : [];
 	if (typeof (propName) === 'undefined') {
-		search.params['beginTime'] = dateRange[0];
-		search.params['endTime'] = dateRange[1];
+		dateParam.beginTime = dateRange[0];
+		dateParam.endTime = dateRange[1];
+		// search.dateParam['beginTime'] = dateRange[0];
+		// search.dateParam['endTime'] = dateRange[1];
 	} else {
-		search.params['begin' + propName] = dateRange[0];
-		search.params['end' + propName] = dateRange[1];
+		search.dateParam['begin' + propName] = dateRange[0];
+		search.dateParam['end' + propName] = dateRange[1];
 	}
+	search.dateParam = dateParam;
 	return search;
 }
 

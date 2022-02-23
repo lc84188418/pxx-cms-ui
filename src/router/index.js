@@ -91,6 +91,12 @@ export const constantRoutes = [
         meta: { title: '操作日志', icon: 'dashboard', affix: true }
       },
       {
+        path: 'system/log/exception',
+        component: (resolve) => require(['@/views/system/log/exception'], resolve),
+        name: 'exception',
+        meta: { title: '异常日志', icon: 'dashboard', affix: true }
+      },
+      {
         path: 'dictionary/xzqh/province',
         component: (resolve) => require(['@/views/dictionary/xzqh/province'], resolve),
         name: 'province',
