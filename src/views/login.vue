@@ -45,7 +45,7 @@
           @click.native.prevent="handleLogin"
         >
           <span v-if="!loading">登 录</span>
-          <span v-else>登 录 中...</span>
+          <span v-if="loading">登 录 中...</span>
         </el-button>
         <div style="float: right;" v-if="register">
           <router-link class="link-type" :to="'/register'">立即注册</router-link>
@@ -124,7 +124,6 @@ export default {
     getJustAuth () {
       getJustAuth().then(res => {
         this.justAuths = res.data;
-
       });
     },
     /** 获取验证码 */
@@ -187,7 +186,7 @@ export default {
     handleLogin () {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
-          this.loading = true;
+          // this.loading = true;
           if (this.loginForm.rememberMe) {
             Cookies.set("username", this.loginForm.username, { expires: 30 });
             Cookies.set("password", encrypt(this.loginForm.password), { expires: 30 });

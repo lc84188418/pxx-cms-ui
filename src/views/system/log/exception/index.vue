@@ -214,8 +214,8 @@
     <!-- 查看日志详情对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
       <el-form ref="form" :model="form">
-        <el-form-item label="日志id:" prop="pkOperateId">
-          <span >{{form.pkOperateId}}</span>
+        <el-form-item label="日志id:" prop="pkExceptionId">
+          <span >{{form.pkExceptionId}}</span>
         </el-form-item>
         <el-form-item label="模块:" prop="modules">
           <span >{{form.modules}}</span>
@@ -223,8 +223,8 @@
         <el-form-item label="业务类型:" prop="businessType">
           <span >{{form.businessType}}</span>
         </el-form-item>
-        <el-form-item label="操作说明:" prop="operateDesc">
-          <span >{{form.operateDesc}}</span>
+        <el-form-item label="操作说明:" prop="exceptionDesc">
+          <span >{{form.exceptionDesc}}</span>
         </el-form-item>
         <el-form-item label="方法名称:" prop="method">
           <span >{{form.method}}</span>
@@ -232,8 +232,8 @@
         <el-form-item label="请求方式:" prop="requestMethod">
           <span >{{form.requestMethod}}</span>
         </el-form-item>
-        <el-form-item label="操作类别:" prop="operateType">
-          <span >{{form.operateType}}</span>
+        <el-form-item label="操作类别:" prop="exceptionType">
+          <span >{{form.exceptionType}}</span>
         </el-form-item>
         <el-form-item label="操作人员id:" prop="userId">
           <span >{{form.userId}}</span>
@@ -256,11 +256,8 @@
         <el-form-item label="请求参数:" prop="requestParam">
           <span >{{form.requestParam}}</span>
         </el-form-item>
-        <el-form-item label="返回参数:" prop="jsonResult">
-          <span >{{form.jsonResult}}</span>
-        </el-form-item>
-        <el-form-item label="操作状态:" prop="status">
-          <span >{{form.status}}</span>
+        <el-form-item label="异常信息:" prop="errorMsg">
+          <span >{{form.errorMsg}}</span>
         </el-form-item>
         <el-form-item label="操作时间:" prop="createTime">
           <span >{{form.createTime}}</span>
