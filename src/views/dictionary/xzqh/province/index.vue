@@ -52,7 +52,8 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">搜索重置</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetOrder">排序重置</el-button>
       </el-form-item>
     </el-form>
 
@@ -93,11 +94,12 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <!-- 列表数据 fixed="left"-->
+    <!-- 列表数据 fixed="left" :header-cell-class-name="handleHeaderClass" @header-click="handleHeaderClick" :default-sort = "{prop: 'create_time', order: 'ascending'}"-->
     <!-- <el-table v-loading="loading" :data="provinceList" @selection-change="handleSelectionChange" style="width: 100%" height="650" border=true :cell-style="{padding:'5px'}"> -->
     <el-table
       v-loading="loading"
       :data="provinceList"
+      @sort-change = "sortChange"
       @selection-change="handleSelectionChange"
       class="dictionary-xzqh-table"
       style="width: 100%"
@@ -144,16 +146,17 @@
         prop="provinceCapital"
         v-if="columns[4].visible"
       />
-      <el-table-column label="首字母" align="center" key="szm" prop="szm" v-if="columns[5].visible" />
+      <el-table-column label="首字母" align="center" key="szm" prop="szm" sortable = custom v-if="columns[5].visible" />
       <el-table-column
         label="排序"
         align="center"
         key="sort"
         prop="sort"
+        sortable
         v-if="columns[6].visible"
-        width="60"
+        width="80"
       />
-      <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[7].visible">
+      <el-table-column label="创建时间" align="center" prop="create_time" sortable v-if="columns[7].visible">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
@@ -200,8 +203,8 @@
     <pagination
       v-show="total>0"
       :total="total"
-      :page.sync="queryParams.current"
-      :limit.sync="queryParams.size"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
 
@@ -272,8 +275,9 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
-        current: 1,
-        size: 15,
+        pageNum: 1,
+        pageSize: 15,
+        orderBy:[],
         zoningCode: undefined,
         provinceName: undefined,
         abbreviation: undefined,
@@ -292,6 +296,8 @@ export default {
         { key: 8, label: `更新时间`, visible: true },
         { key: 9, label: `状态`, visible: true },
       ],
+      // 排序列信息
+      orderBys: [],
       // 表单参数
       form: {},
       // 表单校验
@@ -310,11 +316,42 @@ export default {
     getList () {
       this.loading = true;
       listProvince(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-        this.provinceList = response.data.records;
+        this.provinceList = response.data.list;
         this.total = response.data.total;
         this.loading = false;
       }
       );
+    },
+    //排序操作
+    sortChange({ order, prop }) {
+      let isHave = false;
+      //先判断该排序规则，在本地缓存中是否有
+      for (const i in this.orderBys) {
+        if (this.orderBys[i].indexOf(prop) > -1) {
+          isHave = true;
+        }
+      }
+      if(!isHave){
+        this.orderBys.push(prop);
+      }
+      for (let i=0;i<this.orderBys.length;i++) {
+        //触发的排序和本地缓存的排序相同
+        if (this.orderBys[i].indexOf(prop) > -1) {
+          if(order === 'ascending' || order ==='descending'){
+            if(order === 'ascending'){
+              this.orderBys[i] = prop + ' asc';
+            }else{
+              this.orderBys[i] = prop + ' desc';
+            }
+          }else {
+            //该排序规则置为空
+            this.orderBys.splice(i,1);
+          }
+        }
+      }
+      this.queryParams.orderBy = this.orderBys;
+      //调用后端查询接口
+      this.getList();
     },
 
     // 取消按钮
@@ -336,13 +373,19 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery () {
-      this.queryParams.current = 1;
+      this.queryParams.pageNum = 1;
       this.getList();
     },
-    /** 重置按钮操作 */
+    /** 搜索重置按钮操作 */
     resetQuery () {
       this.resetForm("queryForm");
       this.handleQuery();
+    },
+    /** 排序重置按钮操作 */
+    resetOrder () {
+      this.orderBys = [];
+      this.queryParams.orderBy = [];
+      this.getList();
     },
     // 多选框选中数据
     handleSelectionChange (selection) {
@@ -363,7 +406,7 @@ export default {
       this.reset();
       const provinceIds = row.pkProvinceId || this.ids
       getProvince(provinceIds).then(response => {
-        this.form = response.data.records;
+        this.form = response.data;
         this.open = true;
         this.title = "修改省份";
       });
