@@ -73,7 +73,8 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">搜索重置</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetOrder">排序重置</el-button>
       </el-form-item>
     </el-form>
 
@@ -118,6 +119,7 @@
     <el-table
       v-loading="loading"
       :data="cityList"
+      @sort-change = "sortChange"
       @selection-change="handleSelectionChange"
       style="width: 100%"
       height="650"
@@ -154,6 +156,7 @@
         align="center"
         key="zoningCode"
         prop="zoningCode"
+        width="130"
         v-if="columns[3].visible"
       />
       <el-table-column
@@ -161,6 +164,7 @@
         align="center"
         key="fkProvinceId"
         prop="fkProvinceId"
+        width="80"
         v-if="columns[4].visible"
         :show-overflow-tooltip="true"
       />
@@ -185,11 +189,12 @@
         align="center"
         key="szm"
         prop="szm"
+        sortable
         v-if="columns[7].visible"
-        width="60"
+        width="90"
       />
-      <el-table-column label="排序" align="center" key="sort" prop="sort" v-if="columns[8].visible" />
-      <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[9].visible">
+      <el-table-column label="排序" align="center" key="sort" prop="sort" width="80" sortable v-if="columns[8].visible" />
+      <el-table-column label="创建时间" align="center" prop="create_time" sortable v-if="columns[9].visible">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
@@ -236,8 +241,8 @@
     <pagination
       v-show="total>0"
       :total="total"
-      :page.sync="queryParams.current"
-      :limit.sync="queryParams.size"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
 
@@ -306,8 +311,9 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
-        current: 1,
-        size: 15,
+        pageNum: 1,
+        pageSize: 15,
+        orderBy:[],
         fkProvinceId: undefined,
         cityName: undefined,
         zoningCode: undefined,
@@ -330,6 +336,8 @@ export default {
         { key: 10, label: `更新时间`, visible: true },
         { key: 11, label: `状态`, visible: true },
       ],
+      // 排序列信息
+      orderBys: [],
       // 表单参数
       form: {},
       // 表单校验
@@ -369,11 +377,46 @@ export default {
       this.loading = true;
       console.log(this.queryParams);
       listCity(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-        this.cityList = response.data.records;
+        this.cityList = response.data.list;
         this.total = response.data.total;
         this.loading = false;
       }
       );
+    },
+
+    //排序操作
+    sortChange({ order, prop }) {
+      //拿到当前列的某个属性
+      this.curThead = prop;
+      let isHave = false;
+      //先判断该排序规则，在本地缓存中是否有
+      for (const i in this.orderBys) {
+        if (this.orderBys[i].indexOf(prop) > -1) {
+          isHave = true;
+        }
+      }
+      if(!isHave){
+        // 如果不存在，向数组orderBys中添加当前节点的prop
+        this.orderBys.push(prop);
+      }
+      for (let i=0;i<this.orderBys.length;i++) {
+        //触发的排序和本地缓存的排序相同
+        if (this.orderBys[i].indexOf(prop) > -1) {
+          if(order === 'ascending' || order ==='descending'){
+            if(order === 'ascending'){
+              this.orderBys[i] = prop + ' asc';
+            }else{
+              this.orderBys[i] = prop + ' desc';
+            }
+          }else {
+            //该排序规则置为空
+            this.orderBys.splice(i,1);
+          }
+        }
+      }
+      this.queryParams.orderBy = this.orderBys;
+      //调用后端查询接口
+      this.getList();
     },
 
     // 取消按钮
@@ -397,15 +440,21 @@ export default {
     handleQuery: function () {
       this.$refs["queryForm"].validate(valid => {
         if (valid) {
-          this.queryParams.current = 1;
+          this.queryParams.pageNum = 1;
           this.getList();
         }
       });
     },
-    /** 重置按钮操作 */
+    /** 搜索重置按钮操作 */
     resetQuery () {
       this.resetForm("queryForm");
       this.handleQuery();
+    },
+    /** 排序重置按钮操作 */
+    resetOrder () {
+      this.orderBys = [];
+      this.queryParams.orderBy = [];
+      this.getList();
     },
     // 多选框选中数据
     handleSelectionChange (selection) {
