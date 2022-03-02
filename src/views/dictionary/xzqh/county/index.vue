@@ -15,6 +15,7 @@
           placeholder="请输入街道编码"
           clearable
           size="small"
+          style="width: 140px"
           maxlength="6"
           :disabled="isParentLink"
         />
@@ -25,7 +26,6 @@
           placeholder="请输入乡镇名称"
           clearable
           size="small"
-          style="width: 250px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -53,7 +53,7 @@
       <el-form-item label="状态" prop="status">
         <el-select
           v-model="queryParams.status"
-          placeholder="乡镇状态"
+          placeholder="启用状态"
           clearable
           size="small"
           style="width: 120px"
@@ -64,7 +64,8 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">搜索重置</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetOrder">排序重置</el-button>
       </el-form-item>
     </el-form>
 
@@ -109,11 +110,14 @@
     <el-table
       v-loading="loading"
       :data="countyList"
+      @sort-change="sortChange"
+      :header-cell-style="handleTheadStyle"
       @selection-change="handleSelectionChange"
+      ref="orderTable"
       style="width: 100%"
       height="650"
       :border="true"
-      :cell-style="{padding:'5px'}"
+      :cell-style="{padding:'1px'}"
     >
       <el-table-column type="selection" align="center" width="50" />
       <el-table-column
@@ -121,6 +125,7 @@
         align="center"
         key="pkCountyId"
         prop="pkCountyId"
+        width="80"
         v-if="columns[0].visible"
       />
       <el-table-column
@@ -128,7 +133,6 @@
         align="center"
         key="countyName"
         prop="countyName"
-        width="250"
         v-if="columns[1].visible"
         :show-overflow-tooltip="true"
       />
@@ -137,30 +141,39 @@
         align="center"
         key="zoningCode"
         prop="zoningCode"
+        width="130"
         v-if="columns[2].visible"
       />
       <el-table-column
-        label="所属街道"
+        label="街道编码"
         align="center"
         key="fkStreetId"
         prop="fkStreetId"
+        width="90"
         v-if="columns[3].visible"
         :show-overflow-tooltip="true"
+      />
+      <el-table-column
+        label="所属街道名称"
+        align="center"
+        key="streetName"
+        prop="streetName"
       />
       <el-table-column
         label="邮编"
         align="center"
         key="youbian"
         prop="youbian"
+        width="80"
         v-if="columns[4].visible"
       />
-      <el-table-column label="排序" align="center" key="sort" prop="sort" v-if="columns[5].visible" />
-      <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[6].visible">
+      <el-table-column label="排序" align="center" key="sort" prop="sort" sortable width="80" v-if="columns[5].visible" />
+      <el-table-column label="创建时间" align="center" prop="create_time" sortable width="160" v-if="columns[6].visible">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新时间" align="center" prop="updateTime" v-if="columns[7].visible">
+      <el-table-column label="更新时间" align="center" prop="updateTime" width="160" v-if="columns[7].visible">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
@@ -195,8 +208,8 @@
     <pagination
       v-show="total>0"
       :total="total"
-      :page.sync="queryParams.current"
-      :limit.sync="queryParams.size"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
 
@@ -204,14 +217,7 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="所属街道" prop="fkStreetId">
-          <el-select v-model="form.fkStreetId" filterable placeholder="请选择">
-            <el-option
-              v-for="item in streetList"
-              :key="item.pkStreetId"
-              :label="item.streetName"
-              :value="item.pkStreetId"
-            ></el-option>
-          </el-select>
+          <el-input v-model="form.fkStreetId" disabled />
         </el-form-item>
         <el-form-item label="乡镇名称" prop="countyName">
           <el-input v-model="form.countyName" placeholder="请输入乡镇名称" />
@@ -241,7 +247,7 @@
 </template>
 
 <script>
-import { listCounty, getCounty, delCounty, addCounty, updateCounty, changeCountyStatus } from "@/api/dictionary/xzqh/county";
+import { listCounty, getCounty, delCounty, addCounty, updateCounty, changeCountyStatus,syncCountyData } from "@/api/dictionary/xzqh/county";
 import { apiStreets } from "@/api/dictionary/xzqh/street";
 
 export default {
@@ -272,8 +278,9 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
-        current: 1,
-        size: 15,
+        pageNum: 1,
+        pageSize: 15,
+        orderBy:[],
         fkStreetId: undefined,
         zoningCode: undefined,
         countyName: undefined,
@@ -291,6 +298,8 @@ export default {
         { key: 7, label: `更新时间`, visible: true },
         { key: 8, label: `状态`, visible: true },
       ],
+      //本地排序列 样式缓存
+      curThead: [],
       // 表单参数
       form: {},
       // 表单校验
@@ -326,8 +335,8 @@ export default {
     /** 查询乡镇列表 */
     getList () {
       this.loading = true;
-      listCounty(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-        this.countyList = response.data.records;
+      listCounty(this.queryParams).then(response => {
+        this.countyList = response.data.list;
         this.total = response.data.total;
         this.loading = false;
       }
@@ -335,10 +344,54 @@ export default {
     },
     /** 查询街道列表 */
     getStreetList () {
-      apiStreets(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+      apiStreets().then(response => {
         this.streetList = response.data;
       }
       );
+    },
+    //排序操作，改变样式
+    handleTheadStyle({row, column, rowIndex, columnIndex}){
+      // 找出当前节点的是否在curThead有所记录
+      let index = this.curThead.findIndex(item => { return item.prop == column.property; })
+      if(index > -1){
+      // 在curThead找到当前节点的property值，对其order进行赋值。
+      // 值得注意的是，column中property字段保存的是当前节点的prop值。
+        column.order = this.curThead[index].order;
+      }
+    },
+
+    //排序操作，请求数据
+    sortChange({ column, prop, order }){
+      // 判断数组curThead中是否存在当前节点的prop
+      let index = this.curThead.findIndex(item => { return item.prop == prop; })
+      if (index>-1) {
+      // 如果存在，修改数组curThead中的order
+          this.curThead[index].order = order;
+      }
+      else {
+      // 如果不存在，向数组curThead中添加当前节点的prop和order
+          this.curThead.push({prop:prop,order:order});
+      }
+      //将curThead处理后 传入查询参数
+      this.queryParams.orderBy = this.handlerCurTheadToOrderBy(this.curThead);
+      //调用后端查询接口
+      this.getList();
+    },
+
+    //将list<Map<>> 转成list<String>
+    handlerCurTheadToOrderBy(list){
+      if(list.length < 1){
+        return [];
+      }
+      let orderBys = [];
+      for (const i in list) {
+        if(list[i].order === 'ascending'){
+          orderBys.push(list[i].prop + ' asc');
+        }else {
+          orderBys.push(list[i].prop + ' desc');
+        }
+      }
+      return orderBys;
     },
     // 取消按钮
     cancel () {
@@ -360,15 +413,23 @@ export default {
     handleQuery: function () {
       this.$refs["queryForm"].validate(valid => {
         if (valid) {
-          this.queryParams.current = 1;
+          this.queryParams.pageNum = 1;
           this.getList();
         }
       });
     },
-    /** 重置按钮操作 */
+    /** 搜索重置按钮操作 */
     resetQuery () {
       this.resetForm("queryForm");
       this.handleQuery();
+    },
+    /** 排序重置按钮操作 */
+    resetOrder () {
+      this.$refs.orderTable.clearSort();
+      this.$refs.orderTable.sort('sort','create_time');
+      this.curThead = [];
+      this.queryParams.orderBy = [];
+      this.getList();
     },
     // 多选框选中数据
     handleSelectionChange (selection) {
@@ -445,13 +506,13 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport () {
-      this.download('dictionary/county/export', {
+      this.download('dictionary/xzqh/county/export', {
         ...this.queryParams
       }, `post_${new Date().getTime()}.xlsx`)
     },
     /** 同步按钮操作 同步后台数据库中使用python从统计局爬取到的数据*/
     syncData () {
-      syncCountyData(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+      syncCountyData().then(response => {
       }
       );
     }

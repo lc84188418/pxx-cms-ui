@@ -15,6 +15,7 @@
           placeholder="请输入省份编码"
           clearable
           size="small"
+          style="width: 140px"
           maxlength="2"
           :disabled="isParentLink"
         />
@@ -62,10 +63,10 @@
       <el-form-item label="状态" prop="status">
         <el-select
           v-model="queryParams.status"
-          placeholder="城市状态"
+          placeholder="启用状态"
           clearable
           size="small"
-          style="width: 120px"
+          style="width: 100px"
         >
           <el-option label="启用" value="1" />
           <el-option label="禁用" value="0" />
@@ -120,11 +121,13 @@
       v-loading="loading"
       :data="cityList"
       @sort-change = "sortChange"
+      :header-cell-style="handleTheadStyle"
       @selection-change="handleSelectionChange"
+      ref="orderTable"
       style="width: 100%"
       height="650"
       :border="true"
-      :cell-style="{padding:'5px'}"
+      :cell-style="{padding:'1px'}"
     >
       <el-table-column type="selection" align="center" width="50" />
       <el-table-column
@@ -144,14 +147,6 @@
         :show-overflow-tooltip="true"
       />
       <el-table-column
-        label="拼音"
-        align="center"
-        key="pinyin"
-        prop="pinyin"
-        v-if="columns[2].visible"
-        :show-overflow-tooltip="true"
-      />
-      <el-table-column
         label="区划代码"
         align="center"
         key="zoningCode"
@@ -160,12 +155,20 @@
         v-if="columns[3].visible"
       />
       <el-table-column
-        label="所属省份"
+        label="省份编码"
         align="center"
         key="fkProvinceId"
         prop="fkProvinceId"
         width="80"
         v-if="columns[4].visible"
+        :show-overflow-tooltip="true"
+      />
+      <el-table-column
+        label="所属省份名"
+        align="center"
+        key="provinceName"
+        prop="provinceName"
+        v-if="columns[2].visible"
         :show-overflow-tooltip="true"
       />
       <el-table-column
@@ -189,17 +192,17 @@
         align="center"
         key="szm"
         prop="szm"
+        width="90"
         sortable
         v-if="columns[7].visible"
-        width="90"
       />
       <el-table-column label="排序" align="center" key="sort" prop="sort" width="80" sortable v-if="columns[8].visible" />
-      <el-table-column label="创建时间" align="center" prop="create_time" sortable v-if="columns[9].visible">
+      <el-table-column label="创建时间" align="center" prop="create_time" width="160" sortable v-if="columns[9].visible">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新时间" align="center" prop="updateTime" v-if="columns[10].visible">
+      <el-table-column label="更新时间" align="center" prop="updateTime" width="160" v-if="columns[10].visible">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
@@ -255,6 +258,9 @@
         <el-form-item label="城市名称" prop="cityName">
           <el-input v-model="form.cityName" placeholder="请输入城市名称" />
         </el-form-item>
+        <el-form-item label="拼音" prop="pinyin">
+          <el-input v-model="form.pinyin" disabled/>
+        </el-form-item>
         <el-form-item label="区划代码" prop="zoningCode">
           <el-input v-model="form.zoningCode" placeholder="请输入区划代码" />
         </el-form-item>
@@ -273,6 +279,9 @@
             <el-radio :label="0">禁用</el-radio>
           </el-radio-group>
         </el-form-item>
+        <el-form-item label="父级" prop="parentDesc">
+          <span disabled>{{form.parentDesc}}</span>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -283,7 +292,7 @@
 </template>
 
 <script>
-import { listCity, getCity, delCity, addCity, updateCity, changeCityStatus } from "@/api/dictionary/xzqh/city";
+import { listCity, getCity, delCity, addCity, updateCity, changeCityStatus,syncCityData } from "@/api/dictionary/xzqh/city";
 
 export default {
   name: "City",
@@ -375,8 +384,7 @@ export default {
     /** 查询城市列表 */
     getList () {
       this.loading = true;
-      console.log(this.queryParams);
-      listCity(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+      listCity(this.queryParams).then(response => {
         this.cityList = response.data.list;
         this.total = response.data.total;
         this.loading = false;
@@ -386,8 +394,6 @@ export default {
 
     //排序操作
     sortChange({ order, prop }) {
-      //拿到当前列的某个属性
-      this.curThead = prop;
       let isHave = false;
       //先判断该排序规则，在本地缓存中是否有
       for (const i in this.orderBys) {
@@ -452,7 +458,9 @@ export default {
     },
     /** 排序重置按钮操作 */
     resetOrder () {
-      this.orderBys = [];
+      this.$refs.orderTable.clearSort();
+      this.$refs.orderTable.sort('sort','szm','create_time');
+      this.curThead = [];
       this.queryParams.orderBy = [];
       this.getList();
     },
@@ -538,13 +546,13 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport () {
-      this.download('dictionary/city/export', {
+      this.download('dictionary/xzqh/city/export', {
         ...this.queryParams
       }, `post_${new Date().getTime()}.xlsx`)
     },
     /** 同步按钮操作 同步后台数据库中使用python从统计局爬取到的数据*/
     syncData () {
-      syncCityData(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+      syncCityData().then(response => {
       }
       );
     }

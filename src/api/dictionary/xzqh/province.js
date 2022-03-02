@@ -56,4 +56,24 @@ export function changeProvinceStatus(pkProvinceId, status) {
     data: data
   })
 }
-
+//导出省份
+export function exportProvince() {
+  return request({
+    url: '/dictionary/xzqh/province/export',
+    method: 'get'
+  })
+}
+//同步省份
+export function syncProvinceData() {
+  const query = {
+    startRow: 0,
+    limit: 100,
+    level:1,
+    updateStatus: 2
+  }
+  return request({
+    url: '/dictionary/xzqh/python',
+    method: 'get',
+    params: query
+  })
+}

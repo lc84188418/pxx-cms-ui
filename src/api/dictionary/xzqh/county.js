@@ -57,3 +57,24 @@ export function changeCountyStatus(pkCountyId, status) {
   })
 }
 
+//导出
+export function exportCounty() {
+  return request({
+    url: '/dictionary/xzqh/county/export',
+    method: 'get'
+  })
+}
+//同步数据
+export function syncCountyData() {
+  const query = {
+    startRow: 0,
+    limit: 100,
+    level:5,
+    updateStatus: 2
+  }
+  return request({
+    url: '/dictionary/xzqh/python',
+    method: 'get',
+    params: query
+  })
+}

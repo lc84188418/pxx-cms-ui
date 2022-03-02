@@ -65,3 +65,24 @@ export function changeCityStatus(pkCityId, status) {
   })
 }
 
+//导出城市
+export function exportCity() {
+  return request({
+    url: '/dictionary/xzqh/city/export',
+    method: 'get'
+  })
+}
+//同步城市
+export function syncCityData() {
+  const query = {
+    startRow: 0,
+    limit: 100,
+    level:2,
+    updateStatus: 2
+  }
+  return request({
+    url: '/dictionary/xzqh/python',
+    method: 'get',
+    params: query
+  })
+}

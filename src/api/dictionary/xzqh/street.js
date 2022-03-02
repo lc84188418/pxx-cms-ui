@@ -57,3 +57,24 @@ export function changeStreetStatus(pkStreetId, status) {
   })
 }
 
+//导出街道
+export function exportStreet() {
+  return request({
+    url: '/dictionary/xzqh/street/export',
+    method: 'get'
+  })
+}
+//同步街道
+export function syncStreetData() {
+  const query = {
+    startRow: 0,
+    limit: 100,
+    level:4,
+    updateStatus: 2
+  }
+  return request({
+    url: '/dictionary/xzqh/python',
+    method: 'get',
+    params: query
+  })
+}

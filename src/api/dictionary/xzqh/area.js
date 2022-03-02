@@ -57,3 +57,24 @@ export function changeAreaStatus(pkAreaId, status) {
   })
 }
 
+//导出区域
+export function exportArea() {
+  return request({
+    url: '/dictionary/xzqh/area/export',
+    method: 'get'
+  })
+}
+//同步区域
+export function syncAreaData() {
+  const query = {
+    startRow: 0,
+    limit: 100,
+    level:3,
+    updateStatus: 2
+  }
+  return request({
+    url: '/dictionary/xzqh/python',
+    method: 'get',
+    params: query
+  })
+}

@@ -41,7 +41,7 @@
       <el-form-item label="状态" prop="status">
         <el-select
           v-model="queryParams.status"
-          placeholder="省份状态"
+          placeholder="启用状态"
           clearable
           size="small"
           style="width: 120px"
@@ -105,7 +105,7 @@
       style="width: 100%"
       height="650"
       :border="true"
-      :cell-style="{padding:'5px'}"
+      :cell-style="{padding:'1px'}"
     >
       <el-table-column type="selection" align="center" width="50" />
       <el-table-column
@@ -129,6 +129,7 @@
         align="center"
         key="zoningCode"
         prop="zoningCode"
+        width="130"
         v-if="columns[2].visible"
       />
       <el-table-column
@@ -136,6 +137,7 @@
         align="center"
         key="abbreviation"
         prop="abbreviation"
+        width="90"
         v-if="columns[3].visible"
         :show-overflow-tooltip="true"
       />
@@ -146,7 +148,7 @@
         prop="provinceCapital"
         v-if="columns[4].visible"
       />
-      <el-table-column label="首字母" align="center" key="szm" prop="szm" sortable = custom v-if="columns[5].visible" />
+      <el-table-column label="首字母" align="center" key="szm" prop="szm" width="90" sortable = custom v-if="columns[5].visible" />
       <el-table-column
         label="排序"
         align="center"
@@ -156,12 +158,12 @@
         v-if="columns[6].visible"
         width="80"
       />
-      <el-table-column label="创建时间" align="center" prop="create_time" sortable v-if="columns[7].visible">
+      <el-table-column label="创建时间" align="center" prop="create_time" width="160" sortable v-if="columns[7].visible">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新时间" align="center" prop="updateTime" v-if="columns[8].visible">
+      <el-table-column label="更新时间" align="center" prop="updateTime" width="160" v-if="columns[8].visible">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
@@ -250,7 +252,7 @@
 </template>
 
 <script>
-import { listProvince, getProvince, delProvince, addProvince, updateProvince, changeProvinceStatus } from "@/api/dictionary/xzqh/province";
+import { listProvince, getProvince, delProvince, addProvince, updateProvince, changeProvinceStatus ,syncProvinceData} from "@/api/dictionary/xzqh/province";
 export default {
   name: "Province",
   data () {
@@ -315,7 +317,7 @@ export default {
     /** 查询省份列表 */
     getList () {
       this.loading = true;
-      listProvince(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+      listProvince(this.queryParams).then(response => {
         this.provinceList = response.data.list;
         this.total = response.data.total;
         this.loading = false;
@@ -470,13 +472,13 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport () {
-      this.download('dictionary/province/export', {
+      this.download('dictionary/xzqh/province/export', {
         ...this.queryParams
       }, `post_${new Date().getTime()}.xlsx`)
     },
     /** 同步按钮操作 同步后台数据库中使用python从统计局爬取到的数据*/
     syncData () {
-      syncProvinceData(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+      syncProvinceData().then(response => {
       }
       );
     }
