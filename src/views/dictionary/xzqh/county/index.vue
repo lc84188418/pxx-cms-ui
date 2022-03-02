@@ -237,6 +237,9 @@
             <el-radio :label="0">禁用</el-radio>
           </el-radio-group>
         </el-form-item>
+        <el-form-item label="父级关联" prop="parentDesc">
+          <span disabled>{{form.parentDesc}}</span>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -401,6 +404,7 @@ export default {
     // 表单重置
     reset () {
       this.form = {
+        fkStreetId: undefined,
         countyName: undefined,
         zoningCode: undefined,
         youbian: undefined,
@@ -439,11 +443,15 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd () {
-      this.reset();
-      this.open = true;
-      this.title = "添加街道";
-      //获取到所有街道的数据
-      this.getStreetList();
+      if(!this.isParentLink){
+        alert("请从上级进入方可操作!");
+      }else {
+        this.reset();
+        //将上级参数放入表单中
+        this.form.fkStreetId = this.queryParams.fkStreetId;
+        this.open = true;
+        this.title = "添加乡镇";
+      }
     },
 
 

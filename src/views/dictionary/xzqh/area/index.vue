@@ -145,7 +145,7 @@
         v-if="columns[2].visible"
       />
       <el-table-column
-        label="所属城市"
+        label="城市编码"
         align="center"
         key="fkCityId"
         prop="fkCityId"
@@ -255,7 +255,7 @@
             <el-radio :label="0">禁用</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="父级" prop="parentDesc">
+        <el-form-item label="父级关联" prop="parentDesc">
           <span disabled>{{form.parentDesc}}</span>
         </el-form-item>
       </el-form>
@@ -469,11 +469,15 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd () {
-      this.reset();
-      this.open = true;
-      this.title = "添加区域";
-      //获取到所有城市的数据
-      this.getCityList();
+      if(!this.isParentLink){
+        alert("请从上级进入方可操作!");
+      }else {
+        this.reset();
+        //将上级参数放入表单中
+        this.form.fkCityId = this.queryParams.fkCityId;
+        this.open = true;
+        this.title = "添加区域";
+      }
     },
     /** 修改按钮操作 */
     handleUpdate (row) {
