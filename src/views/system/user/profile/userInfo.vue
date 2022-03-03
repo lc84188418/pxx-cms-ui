@@ -3,16 +3,25 @@
     <el-form-item label="用户昵称" prop="nickName">
       <el-input v-model="user.nickName" maxlength="30" />
     </el-form-item> 
-    <el-form-item label="手机号码" prop="phonenumber">
-      <el-input v-model="user.phonenumber" maxlength="11" />
+    <el-form-item label="手机号码" prop="phone">
+      <el-input v-model="user.phone" maxlength="11" />
     </el-form-item>
     <el-form-item label="邮箱" prop="email">
-      <el-input v-model="user.email" maxlength="50" />
+      <div>
+        <el-input v-model="user.email" maxlength="50" style="width:50%" :disabled = "inputEmail"/>
+        <el-button type="info" style="width:50%" @click="changeBinding">更改绑定</el-button>
+      </div>
+    </el-form-item>
+    <el-form-item label="验证码" v-if="inputCode">
+      <div>
+        <el-input v-model="user.verificationCode" maxlength="6" style="width:80px"/>
+        <el-button round @click="handleVerifyCode">获取验证码</el-button>
+      </div>
     </el-form-item>
     <el-form-item label="性别">
       <el-radio-group v-model="user.sex">
-        <el-radio label="0">男</el-radio>
-        <el-radio label="1">女</el-radio>
+        <el-radio :label="0">男</el-radio>
+        <el-radio :label="1">女</el-radio>
       </el-radio-group>
     </el-form-item>
     <el-form-item>
@@ -24,8 +33,10 @@
 
 <script>
 import { updateUserProfile } from "@/api/system/user";
+import { getVerifyCode } from "@/api/tool/gen";
 
 export default {
+
   props: {
     user: {
       type: Object
@@ -33,6 +44,9 @@ export default {
   },
   data() {
     return {
+      inputCode: true,
+      inputEmail: true,
+    
       // 表单校验
       rules: {
         nickName: [
@@ -57,7 +71,11 @@ export default {
       }
     };
   },
+  created() {
+    console.log('666666666666666');
+  },
   methods: {
+    //提交按钮
     submit() {
       this.$refs["form"].validate(valid => {
         if (valid) {
@@ -67,8 +85,25 @@ export default {
         }
       });
     },
+    //关闭按钮
     close() {
       this.$tab.closePage();
+    },
+    //获取验证码
+    handleVerifyCode () {
+      //验证邮箱
+      const email = this.user.email;
+      //调后台接口，发送验证码到该邮箱
+      getVerifyCode(email).then(response => {
+        this.$modal.msgSuccess(response.data.msg);
+      }
+      );
+      
+   },
+    //更改绑定
+    changeBinding() {
+      //将邮箱输入框置为可输入状态
+      this.inputEmail = false;
     }
   }
 };

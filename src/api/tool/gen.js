@@ -74,3 +74,10 @@ export function synchDb(tableName) {
     method: 'get'
   })
 }
+// 获取验证码
+export function getVerifyCode(email) {
+  return request({
+    url: '/system/common/verifyCode/' + email,
+    method: 'get'
+  })
+}

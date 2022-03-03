@@ -102,7 +102,18 @@ export function updateUserPwd(oldPassword, newPassword) {
   return request({
     url: '/system/user/profile/updatePwd',
     method: 'put',
-    params: data
+    data: data
+  })
+}
+// 绑定二级密码
+export function bindingSecondaryPassword(secondaryPassword) {
+  const data = {
+    secondaryPassword
+  }
+  return request({
+    url: '/system/user/profile/bindingSecondaryPassword',
+    method: 'put',
+    data: data
   })
 }
 
