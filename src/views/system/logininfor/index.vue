@@ -31,9 +31,9 @@
         >
           <el-option
             v-for="dict in dict.type.sys_common_status"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
+            :key="dict.label"
+            :label="dict.value"
+            :value="dict.label"
           />
         </el-select>
       </el-form-item>

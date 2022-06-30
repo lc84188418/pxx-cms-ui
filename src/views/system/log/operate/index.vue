@@ -311,7 +311,7 @@
 <script>
 import { listOperate, getOperate, delOperate} from "@/api/system/log/operate";
 export default {
-  name: "OperateLog",
+  name: "Operate",
   dicts: ['sys_oper_type','request_method'],
   data () {
     return {

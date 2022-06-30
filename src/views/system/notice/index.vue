@@ -23,9 +23,9 @@
         <el-select v-model="queryParams.noticeType" placeholder="公告类型" clearable size="small">
           <el-option
             v-for="dict in dict.type.sys_notice_type"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
+            :key="dict.label"
+            :label="dict.value"
+            :value="dict.label"
           />
         </el-select>
       </el-form-item>
@@ -138,8 +138,8 @@
               <el-select v-model="form.noticeType" placeholder="请选择">
                 <el-option
                   v-for="dict in dict.type.sys_notice_type"
-                  :key="dict.value"
-                  :label="dict.label"
+                  :key="dict.label"
+                  :label="dict.value"
                   :value="dict.value"
                 ></el-option>
               </el-select>
@@ -150,7 +150,7 @@
               <el-radio-group v-model="form.status">
                 <el-radio
                   v-for="dict in dict.type.sys_notice_status"
-                  :key="dict.value"
+                  :key="dict.label"
                   :label="dict.value"
                 >{{dict.label}}</el-radio>
               </el-radio-group>

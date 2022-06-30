@@ -276,7 +276,7 @@
 <script>
 import { listException, getException, delException} from "@/api/system/log/exception";
 export default {
-  name: "ExceptionLog",
+  name: "Exception",
   dicts: ['sys_oper_type','request_method'],
   data () {
     return {
