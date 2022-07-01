@@ -192,7 +192,7 @@
 </template>
 
 <script>
-import { listMetaData, getMetaData, addMetaData,updateMetaData,deleteMetaData,listMetaType} from "@/api/system/meta";
+import { listMetaData, getMetaData, addMetaData,updateMetaData,changeMetadataStatus,changeMetadataDefault,deleteMetaData,listMetaType} from "@/api/system/meta";
 
 export default {
   name: "Meta",
@@ -301,6 +301,30 @@ export default {
       this.getMetaTypeList();
       this.open = true;
       this.title = "添加元数据";
+    },
+    // 启用状态修改
+    handleStatusChange (row) {
+      let text = row.status === 1 ? "启用" : "停用";
+      this.$modal.confirm('确认要"' + text + '""' + row.metaLabel + '"元数据吗？').then(function () {
+        return changeMetadataStatus(row.pkMetaId, row.status);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess(text + "成功");
+      }).catch(function () {
+        row.status = row.status === 1 ? 0 : 1;
+      });
+    },
+    // 设置为默认
+    handleDefaultChange (row) {
+      let text = row.whetherDefault === 1 ? "设置" : "取消";
+      this.$modal.confirm('确认要'+ text + '"默认值？').then(function () {
+        return changeMetadataDefault(row.pkMetaId,row.metaType, row.whetherDefault);
+      }).then(() => {
+        this.$modal.msgSuccess(text + "成功");
+
+      }).catch(function () {
+        row.status = row.status === 1 ? 0 : 1;
+      });
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
