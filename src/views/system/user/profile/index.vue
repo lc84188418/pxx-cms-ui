@@ -89,6 +89,10 @@ export default {
         this.user = response.data.user;
         const roles = response.data.roles;
         this.dept = response.data.dept;
+        //放入store中
+        this.$store.state.current_user= response.data.user;
+        this.$store.state.current_roles= response.data.roles;
+        this.$store.state.current_dept= response.data.dept;
         //将角色列表信息拼接一下
         for(const i in roles){
           if(i == 0){

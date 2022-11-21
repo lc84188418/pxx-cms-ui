@@ -8,116 +8,15 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <el-form-item label="操作模块" prop="modules">
+      <el-form-item label="主题" prop="modules">
         <el-input
-          v-model="queryParams.modules"
+          v-model="queryParams.topic"
           placeholder="请输入模块"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="操作说明" prop="operateDesc">
-        <el-input
-          v-model="queryParams.operateDesc"
-          placeholder="请输入操作说明"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员id" prop="userId" label-width="100px">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入操作人员id"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员姓名" prop="userName" label-width="100px">
-        <el-input
-          v-model="queryParams.userName"
-          placeholder="请输入操作人员姓名"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="主机地址" prop="ip" label-width="100px">
-        <el-input
-          v-model="queryParams.ip"
-          placeholder="请输入主机地址"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作地点" prop="location" label-width="100px">
-        <el-input
-          v-model="queryParams.location"
-          placeholder="请输入操作地点"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作版本号" prop="version" label-width="100px">
-        <el-input
-          v-model="queryParams.version"
-          placeholder="请输入版本号"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="业务类型" prop="businessType">
-        <el-select
-          v-model="queryParams.businessType"
-          placeholder="业务类型"
-          clearable
-          size="small"
-          style="width: 120px"
-        >
-          <el-option
-            v-for="dict in dict.type.sys_oper_type"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="请求方式" prop="requestMethod">
-        <el-select
-          v-model="queryParams.requestMethod"
-          placeholder="请求方式"
-          clearable
-          size="small"
-          style="width: 120px"
-        >
-          <el-option
-            v-for="dict in dict.type.request_method"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="操作类别" prop="operateType">
-        <el-select
-          v-model="queryParams.operateType"
-          placeholder="操作类别"
-          clearable
-          size="small"
-          style="width: 120px"
-        >
-          <el-option label="其它" value="0" />
-          <el-option label="后台用户" value="1" />
-          <el-option label="PC用户" value="2" />
-          <el-option label="手机端用户" value="3" />
-        </el-select>
-      </el-form-item>
-      
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -145,7 +44,7 @@
     <!-- 列表数据-->
     <el-table
       v-loading="loading"
-      :data="logList"
+      :data="listData"
       @selection-change="handleSelectionChange"
       style="width: 100%"
       height="650"
@@ -154,38 +53,35 @@
     >
       <el-table-column type="selection" align="center" width="50" />
       <el-table-column
-        label="模块"
+        label="主键"
         align="center"
-        key="modules"
-        prop="modules"
+        key="pkConsumerId"
+        prop="pkConsumerId"
         :show-overflow-tooltip="true"
       />
-      <el-table-column
-        label="业务类型"
-        align="center"
-        key="businessType"
-        prop="businessType"
-        width="80"
-      />
-      <el-table-column
-        label="操作类别"
-        align="center"
-        key="exceptionType"
-        prop="exceptionType"
-        width="90"
-      />
-      <el-table-column label="操作人员id" align="center" key="userId" prop="userId"/>
-      <el-table-column label="操作人员姓名" align="center" key="userName" prop="userName"/>
-      <el-table-column label="请求URL" align="center" key="url" prop="url"/>
-      <el-table-column label="主机地址" align="center" key="ip" prop="ip" width="150"/>
-      <el-table-column label="操作地点" align="center" key="location" prop="location"/>
-      <el-table-column label="操作版本号" align="center" key="version" prop="version"/>
+      <el-table-column label="主题" align="center" key="topic" prop="topic"/>
+      <!-- <el-table-column label="flag" align="center" key="flag" prop="flag" width="50"/> -->
+      <!-- <el-table-column label="properties" align="center" key="properties" prop="properties"/> -->
+      <!-- <el-table-column label="消息体" align="center" key="body" prop="body"/> -->
+      <!-- <el-table-column label="队列id" align="center" key="queueId" prop="queueId" width="50"/> -->
+      <!-- <el-table-column label="分区名" align="center" key="brokerName" prop="brokerName"/> -->
+      <!-- <el-table-column label="出生地址" align="center" key="bornHost" prop="bornHost" width="180"/> -->
+      <!-- <el-table-column label="存储地址" align="center" key="storeHost" prop="storeHost" width="180"/> -->
+      <el-table-column label="事务id" align="center" key="transactionId" prop="transactionId" width="150"/>
+      <el-table-column label="消息id" align="center" key="msgId" prop="msgId" width="300"/>
+      <el-table-column label="存储大小" align="center" key="storeSize" prop="storeSize"/>
 
-      <el-table-column label="操作时间" align="center" prop="createTime">
+      <el-table-column label="消费时间" align="center" prop="bornTimeStamp">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
+          <span>{{ parseTime(scope.row.bornTimeStamp) }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="存储时间" align="center" prop="storeTimeStamp">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.storeTimeStamp) }}</span>
+        </template>
+      </el-table-column>
+
       <!-- 操作栏  fixed="right"-->
       <el-table-column label="操作" align="center" width="100" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -214,8 +110,8 @@
     <!-- 查看日志详情对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
       <el-form ref="form" :model="form">
-        <el-form-item label="日志id:" prop="pkExceptionId">
-          <span >{{form.pkExceptionId}}</span>
+        <el-form-item label="日志id:" prop="pkOperateId">
+          <span >{{form.pkOperateId}}</span>
         </el-form-item>
         <el-form-item label="模块:" prop="modules">
           <span >{{form.modules}}</span>
@@ -223,8 +119,8 @@
         <el-form-item label="业务类型:" prop="businessType">
           <span >{{form.businessType}}</span>
         </el-form-item>
-        <el-form-item label="操作说明:" prop="exceptionDesc">
-          <span >{{form.exceptionDesc}}</span>
+        <el-form-item label="操作说明:" prop="operateDesc">
+          <span >{{form.operateDesc}}</span>
         </el-form-item>
         <el-form-item label="方法名称:" prop="method">
           <span >{{form.method}}</span>
@@ -232,8 +128,8 @@
         <el-form-item label="请求方式:" prop="requestMethod">
           <span >{{form.requestMethod}}</span>
         </el-form-item>
-        <el-form-item label="操作类别:" prop="exceptionType">
-          <span >{{form.exceptionType}}</span>
+        <el-form-item label="操作类别:" prop="operateType">
+          <span >{{form.operateType}}</span>
         </el-form-item>
         <el-form-item label="操作人员id:" prop="userId">
           <span >{{form.userId}}</span>
@@ -256,8 +152,11 @@
         <el-form-item label="请求参数:" prop="requestParam">
           <span >{{form.requestParam}}</span>
         </el-form-item>
-        <el-form-item label="异常信息:" prop="errorMsg">
-          <span >{{form.errorMsg}}</span>
+        <el-form-item label="返回参数:" prop="jsonResult">
+          <span >{{form.jsonResult}}</span>
+        </el-form-item>
+        <el-form-item label="操作状态:" prop="status">
+          <span >{{form.status}}</span>
         </el-form-item>
         <el-form-item label="操作时间:" prop="createTime">
           <span >{{form.createTime}}</span>
@@ -274,9 +173,9 @@
 </template>
 
 <script>
-import { listException, getException, delException} from "@/api/system/log/exception";
+import { listMqConsumer, getMqConsumer, delMqConsumer} from "@/api/system/log/mq";
 export default {
-  name: "Exception",
+  name: "ConsumerMq",
   dicts: ['sys_oper_type','request_method'],
   data () {
     return {
@@ -292,28 +191,18 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 省份表格数据
-      logList: [],
+      // 列表数据
+      listData: [],
       // 弹出层标题
       title: "",
       // 是否显示编辑的弹出层
       open: false,
+      // 日期范围
+      dateRange: [],
       // 查询参数
       queryParams: {
-        pageNum: 1,
+        pageNum: undefined,
         pageSize: 20,
-        modules: undefined,
-        businessType: undefined,
-        operateDesc: undefined,
-        requestMethod: undefined,
-        operateType: undefined,
-        userId: undefined,
-        userName: undefined,
-        ip: undefined,
-        location: undefined,
-        version: undefined,
-        createStartTime: undefined,
-        createEndTime: undefined,
       },
       // 表单参数
       form: {},
@@ -326,8 +215,8 @@ export default {
     /** 查询日志列表 */
     getList () {
       this.loading = true;
-      listException(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-        this.logList = response.data.list;
+      listMqConsumer(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+        this.listData = response.data.list;
         this.total = response.data.total;
         this.loading = false;
       }
@@ -350,26 +239,26 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange (selection) {
-      this.ids = selection.map(item => item.pkExceptionId)
+      this.ids = selection.map(item => item.pkOperateId)
       this.single = selection.length != 1
       this.multiple = !selection.length
     },
 
     /** 查看详情操作 */
     handleDetail (row) {
-      const pkExceptionId = row.pkExceptionId
-      getException(pkExceptionId).then(response => {
+      const pkConsumerId = row.pkConsumerId
+      getMqConsumer(pkConsumerId).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "异常日志详情";
+        this.title = "操作日志详情";
       });
     },
 
     /** 删除按钮操作，多选删除和单个删除 */
     handleDelete (row) {
-      const ids = row.pkExceptionId || this.ids;
-      this.$modal.confirm('是否确认删除日志编号为"' + ids + '"的数据项？').then(function () {
-        return delException(ids);
+      const consumerIds = row.pkConsumerId || this.ids;
+      this.$modal.confirm('是否确认删除日志编号为"' + consumerIds + '"的数据项？').then(function () {
+        return delMqConsumer(consumerIds);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
@@ -378,7 +267,7 @@ export default {
 
     /** 导出按钮操作 */
     handleExport () {
-      this.download('system/log/exception/export', {
+      this.download('dictionary/operate/export', {
         ...this.queryParams
       }, `post_${new Date().getTime()}.xlsx`)
     },

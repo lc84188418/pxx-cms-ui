@@ -15,6 +15,13 @@ export function listMetaType() {
     method: 'get'
   })
 }
+// 根据源数据类型查询列表
+export function getDicts(dictType) {
+  return request({
+    url: '/system/metadata/type/' + dictType,
+    method: 'get'
+  })
+}
 
 // 查询元数据详细
 export function getMetaData(pkId) {

@@ -77,7 +77,15 @@ export function synchDb(tableName) {
 // 获取验证码
 export function getVerifyCode(email) {
   return request({
-    url: '/system/common/verifyCode/' + email,
+    url: '/mail/verifyCode/' + email,
     method: 'get'
+  })
+}
+// 上传文件
+export function uploadFile(data) {
+  return request({
+    url: '/file/upload',
+    method: 'post',
+    data: data
   })
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
-      <!--部门数据-->
+      <!--部门条件数据-->
       <el-col :span="4" :xs="24">
         <div class="head-container">
           <el-input
@@ -26,7 +26,7 @@
           />
         </div>
       </el-col>
-      <!--用户数据-->
+      <!--用户条件数据-->
       <el-col :span="20" :xs="24">
         <el-form
           :model="queryParams"
@@ -36,10 +36,10 @@
           v-show="showSearch"
           label-width="68px"
         >
-          <el-form-item label="用户名称" prop="userName">
+          <el-form-item label="用户名" prop="userName">
             <el-input
               v-model="queryParams.userName"
-              placeholder="请输入用户名称"
+              placeholder="请输入用户名"
               clearable
               size="small"
               style="width: 240px"
@@ -53,9 +53,24 @@
               clearable
               size="small"
               :maxlength="11"
-              style="width: 240px"
+              style="width: 130px"
               @keyup.enter.native="handleQuery"
             />
+          </el-form-item>
+          <el-form-item label="性别" prop="sex">
+            <el-select
+              v-model="queryParams.sex"
+              placeholder="用户性别"
+              clearable
+              size="small"
+              style="width: 120px"
+            >
+              <el-option v-for="dict in dict.type.sys_user_sex"
+                :key="dict.value"
+                :value="dict.value"
+                :label="dict.label"
+                />
+            </el-select>
           </el-form-item>
           <el-form-item label="状态" prop="status">
             <el-select
@@ -65,8 +80,11 @@
               size="small"
               style="width: 120px"
             >
-              <el-option label="启用" value="1" />
-              <el-option label="禁用" value="0" />
+              <el-option v-for="dict in dict.type.sys_normal_disable"
+                :key="dict.value"
+                :value="dict.value"
+                :label="dict.label"
+                />
             </el-select>
           </el-form-item>
           <el-form-item label="创建时间">
@@ -162,8 +180,8 @@
           <el-table-column
             label="部门"
             align="center"
-            key="deptName"
-            prop="dept.deptName"
+            key="deptDesc"
+            prop="deptDesc"
             v-if="columns[3].visible"
             :show-overflow-tooltip="true"
           />
@@ -186,8 +204,10 @@
             align="center"
             key="sex"
             prop="sex"
+            width="65"
             v-if="columns[6].visible"
-          />
+          >
+          </el-table-column>
           <el-table-column label="状态" align="center" v-if="columns[7].visible" width="65">
             <template slot-scope="scope">
               <el-switch
@@ -309,17 +329,22 @@
           <el-col :span="12">
             <el-form-item label="用户性别" prop="sex">
               <el-radio-group v-model="form.sex">
-                <el-radio :label="1">男</el-radio>
-                <el-radio :label="0">女</el-radio>
-                <el-radio :label="2">未知</el-radio>
+                <el-radio
+                  v-for="dict in dict.type.sys_user_sex"
+                  :key="dict.label"
+                  :label="dict.value"
+                >{{dict.label}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="状态" prop="status">
               <el-radio-group v-model="form.status">
-                <el-radio :label="1">启用</el-radio>
-                <el-radio :label="0">禁用</el-radio>
+                <el-radio
+                  v-for="dict in dict.type.sys_normal_disable"
+                  :key="dict.value"
+                  :label="dict.value"
+                >{{dict.label}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -330,9 +355,9 @@
               <el-select v-model="form.postIds" multiple placeholder="请选择">
                 <el-option
                   v-for="item in postOptions"
-                  :key="item.postId"
-                  :label="item.postName"
-                  :value="item.postId"
+                  :key="item.id"
+                  :label="item.label"
+                  :value="item.id"
                   :disabled="item.status == 1"
                 ></el-option>
               </el-select>
@@ -416,7 +441,7 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
   name: "User",
-  // dicts: ['sys_normal_disable', 'sys_user_sex'],
+  dicts: ['sys_normal_disable', 'sys_user_sex'],
   components: { Treeselect },
   data () {
     return {
@@ -540,13 +565,14 @@ export default {
   created () {
     this.getList();
     this.getDeptTreeselect();
+    this.getRoleAndPost();
   },
   methods: {
     /** 查询用户列表 */
     getList () {
       this.loading = true;
       listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-        this.userList = response.data.records;
+        this.userList = response.data.list;
         this.total = response.data.total;
         this.loading = false;
       }
@@ -556,6 +582,13 @@ export default {
     getDeptTreeselect () {
       deptTreeselect().then(response => {
         this.deptOptions = response.data;
+      });
+    },
+    /** 获取用户的角色，部门信息 */
+    getRoleAndPost(){
+      getUserAddShow().then(response => {
+        this.postOptions = response.data.posts;
+        this.roleOptions = response.data.roles;
       });
     },
     // 左侧部分数据节点单击筛选事件
@@ -592,7 +625,7 @@ export default {
         fkDeptId: undefined,
         userName: undefined,
         nickName: undefined,
-        password: undefined,
+        password: '123456',
         phone: undefined,
         email: undefined,
         //性别默认 2未知
@@ -647,13 +680,10 @@ export default {
       if (this.deptOptions == "undefined") {
         this.getDeptTreeselect();
       }
-      getUserAddShow().then(response => {
-        this.postOptions = response.posts;
-        this.roleOptions = response.data.roles;
-        this.open = true;
-        this.title = "添加用户";
-      });
+      this.open = true;
+      this.title = "添加用户";
     },
+
     /** 修改按钮操作 */
     handleUpdate (row) {
       this.reset();
@@ -661,13 +691,14 @@ export default {
       if (this.deptOptions == "undefined") {
         this.getDeptTreeselect();
       }
+      if (this.postOptions == "undefined") {
+        this.handleUserAddShow();
+      }
       const pkUserId = row.pkUserId || this.ids;
       getUser(pkUserId).then(response => {
-        this.form = response.data;
-        this.postOptions = response.posts;
-        this.roleOptions = response.roles;
-        this.form.postIds = response.postIds;
-        this.form.roleIds = response.roleIds;
+        this.form = response.data.user;
+        this.form.postIds = response.data.posts;
+        this.form.roleIds = response.data.roles;
         this.open = true;
         this.title = "修改用户";
         this.form.password = "";

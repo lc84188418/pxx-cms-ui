@@ -39,8 +39,8 @@ const permission = {
         // 向后端请求路由数据
         getRouters().then(res => {
           let data = res.data
-          const user = data.user
-          const roles = data.roles
+          // const user = data.user
+          // const roles = data.roles
           const menus = data.menus
 
           const sdata = JSON.parse(JSON.stringify(menus))

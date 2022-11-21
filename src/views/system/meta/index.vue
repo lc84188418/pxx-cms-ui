@@ -11,13 +11,15 @@
         />
       </el-form-item>
       <el-form-item label="类型" prop="metaType">
-        <el-input
+        <el-select
           v-model="queryParams.metaType"
-          placeholder="请输入元数据类型"
+          placeholder="请选择类型"
           clearable
           size="small"
-          @keyup.enter.native="handleQuery"
-        />
+          style="width: 120px"
+        >
+          <el-option v-for="item in metatypeList" :key= "item.dictType" :value="item.dictType" :label="item.dictName"/>
+        </el-select>
       </el-form-item>
       <el-form-item label="是否默认" prop="whetherDefault">
         <el-select
@@ -244,6 +246,7 @@ export default {
   },
   created() {
     this.getList();
+    this.getMetaTypeList();
   },
   methods: {
     /** 查询元数据列表 */
@@ -321,9 +324,9 @@ export default {
         return changeMetadataDefault(row.pkMetaId,row.metaType, row.whetherDefault);
       }).then(() => {
         this.$modal.msgSuccess(text + "成功");
-
+        this.getList();
       }).catch(function () {
-        row.status = row.status === 1 ? 0 : 1;
+        row.whetherDefault = row.whetherDefault === 1 ? 0 : 1;
       });
     },
     /** 修改按钮操作 */

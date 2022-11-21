@@ -1,21 +1,28 @@
 <template>
-  <el-form ref="form" :model="user" :rules="rules" label-width="80px">
+  <el-form ref="form" :model="user" :rules="rules" label-width="100px">
     <el-form-item label="用户昵称" prop="nickName">
       <el-input v-model="user.nickName" maxlength="30" />
     </el-form-item> 
     <el-form-item label="手机号码" prop="phone">
-      <el-input v-model="user.phone" maxlength="11" />
+      <el-input v-model="user.phone" maxlength="11" style="width:50%" :disabled = "inputPhone"/>
+      <el-button type="info" style="width:50%" @click="changeBindingPhone(binDingPhone)">{{binDingPhone}}绑定</el-button>
+    </el-form-item>
+        <el-form-item label="手机验证码" v-if="!inputPhone">
+      <div>
+        <el-input v-model="user.phoneVerificationCode" style="width:100px"/>
+        <el-button round @click="handleVerifyCode('phone')">获取验证码</el-button>
+      </div>
     </el-form-item>
     <el-form-item label="邮箱" prop="email">
       <div>
         <el-input v-model="user.email" maxlength="50" style="width:50%" :disabled = "inputEmail"/>
-        <el-button type="info" style="width:50%" @click="changeBinding">更改绑定</el-button>
+        <el-button type="info" style="width:50%" @click="changeBindingEmail(binDingEmail)">{{binDingEmail}}绑定</el-button>
       </div>
     </el-form-item>
-    <el-form-item label="验证码" v-if="inputCode">
+    <el-form-item label="邮箱验证码" v-if="!inputEmail">
       <div>
-        <el-input v-model="user.verificationCode" maxlength="6" style="width:80px"/>
-        <el-button round @click="handleVerifyCode">获取验证码</el-button>
+        <el-input v-model="user.emailVerificationCode" style="width:100px"/>
+        <el-button round @click="handleVerifyCode('email')">获取验证码</el-button>
       </div>
     </el-form-item>
     <el-form-item label="性别">
@@ -44,8 +51,10 @@ export default {
   },
   data() {
     return {
-      inputCode: true,
+      inputPhone: true,
       inputEmail: true,
+      binDingPhone: '更改',
+      binDingEmail: '更改',
     
       // 表单校验
       rules: {
@@ -93,6 +102,9 @@ export default {
     handleVerifyCode () {
       //验证邮箱
       const email = this.user.email;
+      if(email === ''){
+          return;
+      }
       //调后台接口，发送验证码到该邮箱
       getVerifyCode(email).then(response => {
         this.$modal.msgSuccess(response.data.msg);
@@ -100,10 +112,29 @@ export default {
       );
       
    },
-    //更改绑定
-    changeBinding() {
-      //将邮箱输入框置为可输入状态
-      this.inputEmail = false;
+    //更改手机绑定
+    changeBindingPhone(binDingType) {
+      if('更改' === binDingType){
+        this.binDingPhone='取消'
+        //将手机输入框置为可输入状态
+        this.inputPhone = false;
+      }else{
+        this.binDingPhone='更改'
+        //将手机输入框置为不可输入状态
+        this.inputPhone = true;
+      }
+    },
+    //更改邮箱绑定
+    changeBindingEmail(binDingType) {
+      if('更改' === binDingType){
+        this.binDingEmail='取消'
+        //将邮箱输入框置为可输入状态
+        this.inputEmail = false;
+      }else{
+        this.binDingEmail='更改'
+        //将邮箱输入框置为不可输入状态
+        this.inputEmail = true;
+      }
     }
   }
 };

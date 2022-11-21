@@ -58,6 +58,7 @@
           <el-button icon="el-icon-search" circle @click="handleAuthRender('gitee')">示例</el-button>
           <el-button circle @click="handleAuthRender(item.clientSign)" v-for="item,index in justAuths" :key="index">{{item.clientSign}}</el-button>
           <svg-icon :icon-class="item.clientSign" @click="handleAuthRender(item.clientSign)" v-for="item,index in justAuths" :key="index"/>
+          <svg-icon icon-class="qq" @click="handleAuthRender(qq)"/>
         </el-row>
       </div>
     </el-form>
@@ -74,6 +75,7 @@ import { getJustAuth } from "@/api/login";
 import { authRender } from "@/api/login";
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from '@/utils/jsencrypt'
+import TIM from '@/utils/tim'
 
 export default {
   name: "Login",

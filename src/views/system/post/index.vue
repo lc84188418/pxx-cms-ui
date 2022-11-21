@@ -19,7 +19,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-          <el-form-item label="状态" prop="status">
+          <!-- <el-form-item label="状态" prop="status">
             <el-select
               v-model="queryParams.status"
               placeholder="岗位状态"
@@ -30,7 +30,22 @@
               <el-option label="启用" value="1" />
               <el-option label="禁用" value="0" />
             </el-select>
-          </el-form-item>
+          </el-form-item> -->
+        <el-form-item label="状态" prop="status">
+          <el-select
+            v-model="queryParams.status"
+            placeholder="岗位状态"
+            clearable
+            size="small"
+            style="width: 120px"
+          >
+            <el-option v-for="dict in dict.type.sys_normal_disable"
+              :key="dict.value"
+              :value="dict.value"
+              :label="dict.label"
+              />
+          </el-select>
+        </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -84,7 +99,7 @@
       <el-table-column label="岗位编号" align="center" prop="pkPostId" />
       <el-table-column label="岗位编码" align="center" prop="postCode" />
       <el-table-column label="岗位名称" align="center" prop="postName" />
-      <el-table-column label="岗位排序" align="center" prop="sort" />
+      <el-table-column label="排序" align="center" prop="sort" />
       <el-table-column label="状态" align="center" width="65">
         <template slot-scope="scope">
           <el-switch
@@ -102,7 +117,7 @@
         </template>
       </el-table-column>
       <el-table-column label="更新人" align="center" prop="updateBy" />
-      <el-table-column label="创建时间" align="center" prop="updateTime" width="180">
+      <el-table-column label="更新时间" align="center" prop="updateTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
@@ -147,8 +162,11 @@
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="form.status">
-            <el-radio :label="1">启用</el-radio>
-            <el-radio :label="0">禁用</el-radio>
+            <el-radio
+                  v-for="dict in dict.type.sys_normal_disable"
+                  :key="dict.value"
+                  :label="dict.value"
+                >{{dict.label}}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
@@ -168,6 +186,7 @@ import { listPost, getPost, delPost, addPost, updatePost,changeStatus } from "@/
 
 export default {
   name: "Post",
+  dicts: ['sys_normal_disable'],
   data() {
     return {
       // 遮罩层
@@ -274,7 +293,7 @@ export default {
     //状态修改
     handleStatusChange (row) {
       let text = row.status === 1 ? "启用" : "停用";
-      this.$modal.confirm('确认要"' + text + '""' + row.roleName + '"岗位吗？').then(function () {
+      this.$modal.confirm('确认要"' + text + '""' + row.postName + '"岗位吗？').then(function () {
         return changeStatus(row.pkPostId, row.status);
       }).then(() => {
         this.$modal.msgSuccess(text + "成功");

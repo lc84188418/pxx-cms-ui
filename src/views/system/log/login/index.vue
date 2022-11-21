@@ -8,116 +8,55 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <el-form-item label="操作模块" prop="modules">
-        <el-input
-          v-model="queryParams.modules"
-          placeholder="请输入模块"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作说明" prop="operateDesc">
-        <el-input
-          v-model="queryParams.operateDesc"
-          placeholder="请输入操作说明"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员id" prop="userId" label-width="100px">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入操作人员id"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员姓名" prop="userName" label-width="100px">
+      <el-form-item label="登录名" prop="userName">
         <el-input
           v-model="queryParams.userName"
-          placeholder="请输入操作人员姓名"
+          placeholder="请输入登录名"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="主机地址" prop="ip" label-width="100px">
+
+      <el-form-item label="登录系统" prop="loginSystem">
         <el-input
-          v-model="queryParams.ip"
-          placeholder="请输入主机地址"
+          v-model="queryParams.loginSystem"
+          placeholder="请输入登录系统"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="操作地点" prop="location" label-width="100px">
+      <el-form-item label="登录终端" prop="loginClient">
         <el-input
-          v-model="queryParams.location"
-          placeholder="请输入操作地点"
+          v-model="queryParams.loginClient"
+          placeholder="请输入登录终端"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="操作版本号" prop="version" label-width="100px">
+      <el-form-item label="登录状态" prop="loginStatus">
         <el-input
-          v-model="queryParams.version"
-          placeholder="请输入版本号"
+          v-model="queryParams.loginStatus"
+          placeholder="请输入登录状态"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="业务类型" prop="businessType">
-        <el-select
-          v-model="queryParams.businessType"
-          placeholder="业务类型"
-          clearable
+      <el-form-item label="创建时间">
+        <el-date-picker
+          v-model="dateRange"
           size="small"
-          style="width: 120px"
-        >
-          <el-option
-            v-for="dict in dict.type.sys_oper_type"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        ></el-date-picker>
       </el-form-item>
-      <el-form-item label="请求方式" prop="requestMethod">
-        <el-select
-          v-model="queryParams.requestMethod"
-          placeholder="请求方式"
-          clearable
-          size="small"
-          style="width: 120px"
-        >
-          <el-option
-            v-for="dict in dict.type.request_method"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="操作类别" prop="operateType">
-        <el-select
-          v-model="queryParams.operateType"
-          placeholder="操作类别"
-          clearable
-          size="small"
-          style="width: 120px"
-        >
-          <el-option label="其它" value="0" />
-          <el-option label="后台用户" value="1" />
-          <el-option label="PC用户" value="2" />
-          <el-option label="手机端用户" value="3" />
-        </el-select>
-      </el-form-item>
-      
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -153,33 +92,13 @@
       :cell-style="{padding:'0px'}"
     >
       <el-table-column type="selection" align="center" width="50" />
-      <el-table-column
-        label="模块"
-        align="center"
-        key="modules"
-        prop="modules"
-        :show-overflow-tooltip="true"
-      />
-      <el-table-column
-        label="业务类型"
-        align="center"
-        key="businessType"
-        prop="businessType"
-        width="80"
-      />
-      <el-table-column
-        label="操作类别"
-        align="center"
-        key="exceptionType"
-        prop="exceptionType"
-        width="90"
-      />
-      <el-table-column label="操作人员id" align="center" key="userId" prop="userId"/>
-      <el-table-column label="操作人员姓名" align="center" key="userName" prop="userName"/>
-      <el-table-column label="请求URL" align="center" key="url" prop="url"/>
-      <el-table-column label="主机地址" align="center" key="ip" prop="ip" width="150"/>
-      <el-table-column label="操作地点" align="center" key="location" prop="location"/>
-      <el-table-column label="操作版本号" align="center" key="version" prop="version"/>
+      <el-table-column label="日志id" align="center" key="infoId" prop="infoId"/>
+      <el-table-column label="登录名" align="center" key="userName" prop="userName"/>
+      <el-table-column label="登录IP" align="center" key="loginIp" prop="loginIp" width="150"/>
+      <el-table-column label="登录系统" align="center" key="loginSystem" prop="loginSystem" width="150"/>
+      <el-table-column label="登录终端" align="center" key="loginClient" prop="loginClient"/>
+      <el-table-column label="登录状态码" align="center" key="loginStatus" prop="loginStatus"/>
+      <el-table-column label="状态描述" align="center" key="msg" prop="msg"/>
 
       <el-table-column label="操作时间" align="center" prop="createTime">
         <template slot-scope="scope">
@@ -214,8 +133,8 @@
     <!-- 查看日志详情对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
       <el-form ref="form" :model="form">
-        <el-form-item label="日志id:" prop="pkExceptionId">
-          <span >{{form.pkExceptionId}}</span>
+        <el-form-item label="日志id:" prop="pkLoginId">
+          <span >{{form.pkLoginId}}</span>
         </el-form-item>
         <el-form-item label="模块:" prop="modules">
           <span >{{form.modules}}</span>
@@ -223,8 +142,8 @@
         <el-form-item label="业务类型:" prop="businessType">
           <span >{{form.businessType}}</span>
         </el-form-item>
-        <el-form-item label="操作说明:" prop="exceptionDesc">
-          <span >{{form.exceptionDesc}}</span>
+        <el-form-item label="操作说明:" prop="loginDesc">
+          <span >{{form.loginDesc}}</span>
         </el-form-item>
         <el-form-item label="方法名称:" prop="method">
           <span >{{form.method}}</span>
@@ -232,8 +151,8 @@
         <el-form-item label="请求方式:" prop="requestMethod">
           <span >{{form.requestMethod}}</span>
         </el-form-item>
-        <el-form-item label="操作类别:" prop="exceptionType">
-          <span >{{form.exceptionType}}</span>
+        <el-form-item label="操作类别:" prop="loginType">
+          <span >{{form.loginType}}</span>
         </el-form-item>
         <el-form-item label="操作人员id:" prop="userId">
           <span >{{form.userId}}</span>
@@ -256,8 +175,11 @@
         <el-form-item label="请求参数:" prop="requestParam">
           <span >{{form.requestParam}}</span>
         </el-form-item>
-        <el-form-item label="异常信息:" prop="errorMsg">
-          <span >{{form.errorMsg}}</span>
+        <el-form-item label="返回参数:" prop="jsonResult">
+          <span >{{form.jsonResult}}</span>
+        </el-form-item>
+        <el-form-item label="操作状态:" prop="status">
+          <span >{{form.status}}</span>
         </el-form-item>
         <el-form-item label="操作时间:" prop="createTime">
           <span >{{form.createTime}}</span>
@@ -274,9 +196,9 @@
 </template>
 
 <script>
-import { listException, getException, delException} from "@/api/system/log/exception";
+import { listLogin, getLogin, delLogin} from "@/api/system/log/login";
 export default {
-  name: "Exception",
+  name: "Login",
   dicts: ['sys_oper_type','request_method'],
   data () {
     return {
@@ -292,28 +214,30 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 省份表格数据
+      // 日志数据
       logList: [],
       // 弹出层标题
       title: "",
       // 是否显示编辑的弹出层
       open: false,
+      // 日期范围
+      dateRange: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 20,
         modules: undefined,
         businessType: undefined,
-        operateDesc: undefined,
+        loginDesc: undefined,
         requestMethod: undefined,
-        operateType: undefined,
+        loginType: undefined,
         userId: undefined,
         userName: undefined,
         ip: undefined,
         location: undefined,
+        status: undefined,
         version: undefined,
-        createStartTime: undefined,
-        createEndTime: undefined,
+        dateParam: undefined,
       },
       // 表单参数
       form: {},
@@ -326,7 +250,7 @@ export default {
     /** 查询日志列表 */
     getList () {
       this.loading = true;
-      listException(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+      listLogin(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
         this.logList = response.data.list;
         this.total = response.data.total;
         this.loading = false;
@@ -350,26 +274,26 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange (selection) {
-      this.ids = selection.map(item => item.pkExceptionId)
+      this.ids = selection.map(item => item.pkLoginId)
       this.single = selection.length != 1
       this.multiple = !selection.length
     },
 
     /** 查看详情操作 */
     handleDetail (row) {
-      const pkExceptionId = row.pkExceptionId
-      getException(pkExceptionId).then(response => {
+      const pkLoginId = row.pkLoginId
+      getLogin(pkLoginId).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "异常日志详情";
+        this.title = "操作日志详情";
       });
     },
 
     /** 删除按钮操作，多选删除和单个删除 */
     handleDelete (row) {
-      const ids = row.pkExceptionId || this.ids;
-      this.$modal.confirm('是否确认删除日志编号为"' + ids + '"的数据项？').then(function () {
-        return delException(ids);
+      const loginIds = row.pkLoginId || this.ids;
+      this.$modal.confirm('是否确认删除日志编号为"' + loginIds + '"的数据项？').then(function () {
+        return delLogin(loginIds);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
@@ -378,7 +302,7 @@ export default {
 
     /** 导出按钮操作 */
     handleExport () {
-      this.download('system/log/exception/export', {
+      this.download('dictionary/login/export', {
         ...this.queryParams
       }, `post_${new Date().getTime()}.xlsx`)
     },

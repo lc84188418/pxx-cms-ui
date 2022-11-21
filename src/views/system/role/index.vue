@@ -30,8 +30,7 @@
           size="small"
           style="width: 120px"
         >
-          <el-option label="启用" value="1" />
-          <el-option label="禁用" value="0" />
+          <el-option v-for="meta in dict.type.sys_normal_disable" :key="meta.value" :value="meta.value" :label="meta.label" />
         </el-select>
       </el-form-item>
       <el-form-item label="数据范围" prop="dataScope">
@@ -42,10 +41,7 @@
           size="small"
           style="width: 120px"
         >
-          <el-option label="全部" value="1" />
-          <el-option label="自定义" value="2" />
-          <el-option label="本部门" value="3" />
-          <el-option label="本部门及以下" value="4" />
+          <el-option v-for="meta in dict.type.perms_scope" :key="meta.value" :value="meta.value" :label="meta.label"/>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -315,6 +311,7 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
 export default {
   name: "County",
+  dicts: ['sys_normal_disable','perms_scope'],
   // register the component
   components: { Treeselect },
   data () {

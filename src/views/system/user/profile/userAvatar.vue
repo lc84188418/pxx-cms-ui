@@ -55,7 +55,9 @@
 <script>
 import store from "@/store";
 import { VueCropper } from "vue-cropper";
-import { uploadAvatar } from "@/api/system/user";
+import { uploadFile } from "@/api/tool/gen";
+import { updateUserAvatar} from "@/api/system/user";
+import Cookies from "js-cookie";
 
 export default {
   components: { VueCropper },
@@ -123,13 +125,26 @@ export default {
     uploadImg() {
       this.$refs.cropper.getCropBlob(data => {
         let formData = new FormData();
-        formData.append("avatarfile", data);
-        uploadAvatar(formData).then(response => {
+        formData.append("file", data);
+        uploadFile(formData).then(response => {
           this.open = false;
-          this.options.img = response.imgUrl;
+          this.options.img = response;
           store.commit('SET_AVATAR', this.options.img);
-          this.$modal.msgSuccess("修改成功");
+          // this.$modal.msgSuccess("修改成功");
           this.visible = false;
+          // const user = this.$store.state.current_user;
+          // console.info(this.$store.state);
+          // console.info(user);
+
+          // const username = Cookies.get("username");
+          // //将新的文件路径传入用户修改接口
+          // user.avatar=response;
+          var userInfo ={
+            avatar:response
+          };
+          updateUserAvatar(userInfo).then(response => {
+              this.$modal.msgSuccess("修改成功");
+          });
         });
       });
     },

@@ -10,10 +10,15 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="是否外链" prop="isFrame">
+        <el-select v-model="queryParams.isFrame" clearable size="small">
+          <el-option label="是" value="1"/>
+          <el-option label="否" value="0"/>
+        </el-select>
+      </el-form-item>
       <el-form-item label="状态" prop="status">
         <el-select v-model="queryParams.status" placeholder="菜单状态" clearable size="small">
-          <el-option key="1" label="正常" value="1" />
-          <el-option key="0" label="停用" value="0" />
+          <el-option v-for="meta in dict.type.sys_normal_disable" :label="meta.label" :value="meta.value" :key="meta.value" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -50,6 +55,16 @@
       <el-table-column prop="perms" label="权限标识" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="path" label="组件路径" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="menuType" label="菜单类型" width="80"></el-table-column>
+      <el-table-column prop="isFrame" label="是否外链" width="80">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.isFrame"
+            :active-value="1"
+            :inactive-value="0"
+            @change="handleIsFrameChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
       <el-table-column prop="status" label="状态" width="60">
         <template slot-scope="scope">
           <el-switch
@@ -97,9 +112,9 @@
           <el-col :span="24">
             <el-form-item label="菜单类型" prop="menuType">
               <el-radio-group v-model="form.menuType">
-                <el-radio label="C">目录</el-radio>
-                <el-radio label="M">菜单</el-radio>
-                <el-radio label="B">按钮</el-radio>
+                <el-radio label="M">目录</el-radio>
+                <el-radio label="C">菜单</el-radio>
+                <el-radio label="F">按钮</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -135,7 +150,7 @@
               <el-input-number v-model="form.sort" controls-position="right" :min="0" />
             </el-form-item>
           </el-col>
-          <el-col :span="12" v-if="form.menuType != 'F'">
+          <el-col :span="12">
             <el-form-item>
               <span slot="label">
                 <el-tooltip content="选择是外链则路由地址需要以`http(s)://`开头" placement="top">
@@ -148,7 +163,7 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col :span="12" v-if="form.menuType != 'F'">
+          <el-col :span="12">
             <el-form-item prop="path">
               <span slot="label">
                 <el-tooltip content="访问的路由地址，如：`user`，如外网地址需内链访问则以`http(s)://`开头" placement="top">
@@ -168,7 +183,7 @@
               <el-input v-model="form.component" placeholder="请输入组件路径" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="12" v-if="form.menuType != 'M'">
             <el-form-item prop="perms">
               <el-input v-model="form.perms" placeholder="请输入权限标识" maxlength="100" />
               <span slot="label">
@@ -211,12 +226,17 @@
                   <i class="el-icon-question"></i>
                 </el-tooltip>显示状态
               </span>
-              <el-radio-group v-model="form.visible">
+
+              <!-- <el-radio-group v-model="form.visible">
                 <el-radio
                   v-for="dict in dict.type.sys_show_hide"
                   :key="dict.label"
                   :label="dict.value"
                 >{{dict.label}}</el-radio>
+              </el-radio-group> -->
+              <el-radio-group v-model="form.visible">
+                <el-radio :label="1">显示</el-radio>
+                <el-radio :label="0">不显示</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -227,6 +247,7 @@
                   <i class="el-icon-question"></i>
                 </el-tooltip>菜单状态
               </span>
+
               <el-radio-group v-model="form.status">
                 <el-radio
                   v-for="dict in dict.type.sys_normal_disable"
@@ -252,7 +273,7 @@
 </template>
 
 <script>
-import { listMenu, getMenu, delMenu, addMenu, updateMenu, changeMenuStatus } from "@/api/system/menu";
+import { listMenu, getMenu, delMenu, addMenu, updateMenu} from "@/api/system/menu";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import IconSelect from "@/components/IconSelect";
@@ -296,9 +317,6 @@ export default {
         ],
         orderNum: [
           { required: true, message: "菜单顺序不能为空", trigger: "blur" }
-        ],
-        path: [
-          { required: true, message: "路由地址不能为空", trigger: "blur" }
         ]
       }
     };
@@ -347,16 +365,37 @@ export default {
       });
       }
     },
-    // 菜单状态修改
+    //是否外链修改
+    handleIsFrameChange (row) {
+      let text = row.isFrame === 1 ? "设置外链" : "取消外链";
+      this.$modal.confirm('确认要"' + text + '""' + row.menuName + '"菜单吗？').then(function () {
+      let data = {
+        pkMenuId:row.pkMenuId,
+        isFrame:row.isFrame,
+      }
+        return updateMenu(data);
+      }).then(() => {
+        this.$modal.msgSuccess(text + "成功");
+      }).catch(function () {
+        row.isFrame = row.isFrame === 1 ? 0 : 1;
+      });
+    },
+    // 启用状态修改
     handleStatusChange (row) {
       let text = row.status === 1 ? "启用" : "停用";
       if (row.parentId === 0) {
         text = text + "顶级目录"
       }
       this.$modal.confirm('确认要"' + text + '""' + row.menuName + '"菜单吗？').then(function () {
-        return changeMenuStatus(row.pkMenuId, row.status);
+      let data = {
+        pkMenuId:row.pkMenuId,
+        status:row.status,
+      }
+        return updateMenu(data);
       }).then(() => {
         this.$modal.msgSuccess(text + "成功");
+        //由于可能改了父级菜单，因此需刷新下列表
+        this.getList();
       }).catch(function () {
         row.status = row.status === 1 ? 0 : 1;
       });
@@ -374,11 +413,11 @@ export default {
         menuName: undefined,
         icon: undefined,
         menuType: "C",
-        orderNum: undefined,
-        isFrame: 1,
+        isFrame: 0,
         isCache: 0,
-        visible: 0,
-        status: 1
+        visible: 1,
+        status: 1,
+        sort:1
       };
       this.resetForm("form");
     },

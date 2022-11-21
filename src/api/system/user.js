@@ -92,7 +92,14 @@ export function updateUserProfile(data) {
     data: data
   })
 }
-
+// 修改用户个人信息
+export function updateUserAvatar(data) {
+  return request({
+    url: '/system/user/profile/avatar',
+    method: 'put',
+    data: data
+  })
+}
 // 用户密码重置
 export function updateUserPwd(oldPassword, newPassword) {
   const data = {
@@ -113,15 +120,6 @@ export function bindingSecondaryPassword(secondaryPassword) {
   return request({
     url: '/system/user/profile/bindingSecondaryPassword',
     method: 'put',
-    data: data
-  })
-}
-
-// 用户头像上传
-export function uploadAvatar(data) {
-  return request({
-    url: '/system/user/profile/avatar',
-    method: 'post',
     data: data
   })
 }

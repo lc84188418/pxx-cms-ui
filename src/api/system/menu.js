@@ -42,19 +42,6 @@ export function addMenu(data) {
   })
 }
 
-// 菜单状态修改
-export function changeMenuStatus(pkMenuId, status) {
-  const data = {
-    pkMenuId,
-    status
-  }
-  return request({
-    url: '/system/menu',
-    method: 'put',
-    data: data
-  })
-}
-
 // 修改菜单
 export function updateMenu(data) {
   return request({

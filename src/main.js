@@ -17,7 +17,7 @@ import { download } from '@/utils/request'
 
 import './assets/icons' // icon
 import './permission' // permission control
-import { getDicts } from "@/api/system/dict/data";
+import { getDicts } from "@/api/system/meta";
 import { parseTime, resetForm, addDateRange, selectMetaLabel, selectMetaLabels, handleTree } from "@/utils/ruoyi";
 // 分页组件
 import Pagination from "@/components/Pagination";
