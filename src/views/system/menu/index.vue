@@ -26,6 +26,16 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item label="类型" prop="menuType">
+        <el-select v-model="queryParams.menuType" placeholder="菜单类型" clearable size="small">
+          <el-option
+            v-for="meta in dict.type.sys_menu_type"
+            :label="meta.label"
+            :value="meta.value"
+            :key="meta.value"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -117,9 +127,9 @@
           <el-col :span="24">
             <el-form-item label="菜单类型" prop="menuType">
               <el-radio-group v-model="form.menuType">
-                <el-radio label="M">目录</el-radio>
-                <el-radio label="C">菜单</el-radio>
-                <el-radio label="F">按钮</el-radio>
+                <el-radio label="M">目录(M)</el-radio>
+                <el-radio label="C">菜单(C)</el-radio>
+                <el-radio label="F">按钮(F)</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -168,17 +178,20 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="12" v-if="form.menuType != 'F'">
             <el-form-item prop="path">
               <span slot="label">
-                <el-tooltip content="访问的路由地址，如：`user`，如外网地址需内链访问则以`http(s)://`开头" placement="top">
+                <el-tooltip
+                  content="访问的路由地址，处理后上级菜单的path会添加到该项值前。如：`user`，如外网地址需内链访问则以`http(s)://`开头"
+                  placement="top"
+                >
                   <i class="el-icon-question"></i>
                 </el-tooltip>路由地址
               </span>
               <el-input v-model="form.path" placeholder="请输入路由地址" />
             </el-form-item>
           </el-col>
-          <el-col :span="12" v-if="form.menuType == 'C'">
+          <el-col :span="12" v-if="form.menuType == 'C' && form.isFrame != 1">
             <el-form-item prop="component">
               <span slot="label">
                 <el-tooltip content="访问的组件路径，如：`system/user/index`，默认在`views`目录下" placement="top">
@@ -285,7 +298,7 @@ import IconSelect from "@/components/IconSelect";
 
 export default {
   name: "Menu",
-  dicts: ['sys_show_hide', 'sys_normal_disable'],
+  dicts: ['sys_show_hide', 'sys_normal_disable', 'sys_menu_type'],
   components: { Treeselect, IconSelect },
   data () {
     return {
@@ -293,6 +306,8 @@ export default {
       loading: true,
       // 显示搜索条件
       showSearch: true,
+      // 全部菜单表格树数据
+      menuAllList: [],
       // 菜单表格树数据
       menuList: [],
       // 菜单树选项
@@ -308,7 +323,9 @@ export default {
       // 查询参数
       queryParams: {
         menuName: undefined,
-        visible: undefined
+        visible: undefined,
+        status: undefined,
+        menuType: undefined,
       },
       // 表单参数
       form: {},
@@ -322,6 +339,9 @@ export default {
         ],
         orderNum: [
           { required: true, message: "菜单顺序不能为空", trigger: "blur" }
+        ],
+        path: [
+          { required: true, message: "路由地址不能为空", trigger: "blur" }
         ]
       }
     };
@@ -338,8 +358,13 @@ export default {
     getList () {
       this.loading = true;
       listMenu(this.queryParams).then(response => {
+        // console.log(JSON.stringify(this.queryParams));
+        //如果是首次进入，将得到的所有菜单数据放置到menuAllList中
+        if (JSON.stringify(this.queryParams) == '{}') {
+          this.menuAllList = this.handleTree(response.data, "pkMenuId");
+        }
         this.menuList = this.handleTree(response.data, "pkMenuId");
-        console.log(this.menuList);
+        // console.log(this.menuList);
         this.loading = false;
       });
     },
@@ -359,7 +384,7 @@ export default {
       if (this.menuList.length > 0) {
         this.menuOptions = [];
         const menu = { pkMenuId: 0, menuName: '主类目', children: [] };
-        menu.children = this.menuList;
+        menu.children = this.menuAllList;
         this.menuOptions.push(menu);
       } else {
         listMenu().then(response => {
@@ -470,9 +495,15 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.pkMenuId != undefined) {
-            //修改了菜单后，某些值需要重新设置一下
+            //修改菜单时，某些值需要重新设置一下
             if (this.form.menuType === 'M') {
               this.form.perms = '';
+              this.form.component = '';
+              this.form.isCache = 0;
+            } else if (this.form.menuType === 'F') {
+              this.form.path = '';
+            }
+            if (this.form.isFrame === 1) {
               this.form.component = '';
               this.form.isCache = 0;
             }
