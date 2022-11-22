@@ -27,3 +27,27 @@ export function delMqConsumer(logId) {
 }
 
 
+// 查询mq生产日志列表
+export function listMqProducer(query) {
+  return request({
+    url: '/mq/producer',
+    method: 'get',
+    params: query
+  })
+}
+
+// 查询mq生产日志详细
+export function getMqProducer(logId) {
+  return request({
+    url: '/mq/producer/' + praseStrEmpty(logId),
+    method: 'get'
+  })
+}
+
+//删除mq生产日志
+export function delMqProducer(logId) {
+  return request({
+    url: '/mq/producer/' + logId,
+    method: 'delete'
+  })
+}

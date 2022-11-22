@@ -12,13 +12,18 @@
       </el-form-item>
       <el-form-item label="是否外链" prop="isFrame">
         <el-select v-model="queryParams.isFrame" clearable size="small">
-          <el-option label="是" value="1"/>
-          <el-option label="否" value="0"/>
+          <el-option label="是" value="1" />
+          <el-option label="否" value="0" />
         </el-select>
       </el-form-item>
       <el-form-item label="状态" prop="status">
         <el-select v-model="queryParams.status" placeholder="菜单状态" clearable size="small">
-          <el-option v-for="meta in dict.type.sys_normal_disable" :label="meta.label" :value="meta.value" :key="meta.value" />
+          <el-option
+            v-for="meta in dict.type.sys_normal_disable"
+            :label="meta.label"
+            :value="meta.value"
+            :key="meta.value"
+          />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -233,7 +238,7 @@
                   :key="dict.label"
                   :label="dict.value"
                 >{{dict.label}}</el-radio>
-              </el-radio-group> -->
+              </el-radio-group>-->
               <el-radio-group v-model="form.visible">
                 <el-radio :label="1">显示</el-radio>
                 <el-radio :label="0">不显示</el-radio>
@@ -273,7 +278,7 @@
 </template>
 
 <script>
-import { listMenu, getMenu, delMenu, addMenu, updateMenu} from "@/api/system/menu";
+import { listMenu, getMenu, delMenu, addMenu, updateMenu } from "@/api/system/menu";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import IconSelect from "@/components/IconSelect";
@@ -351,28 +356,28 @@ export default {
     },
     /** 查询菜单下拉树结构 */
     getTreeselect () {
-      if(this.menuList.length > 0){
+      if (this.menuList.length > 0) {
         this.menuOptions = [];
         const menu = { pkMenuId: 0, menuName: '主类目', children: [] };
         menu.children = this.menuList;
         this.menuOptions.push(menu);
-      }else{
-      listMenu().then(response => {
-        this.menuOptions = [];
-        const menu = { pkMenuId: 0, menuName: '主类目', children: [] };
-        menu.children = this.handleTree(response.data, "pkMenuId");
-        this.menuOptions.push(menu);
-      });
+      } else {
+        listMenu().then(response => {
+          this.menuOptions = [];
+          const menu = { pkMenuId: 0, menuName: '主类目', children: [] };
+          menu.children = this.handleTree(response.data, "pkMenuId");
+          this.menuOptions.push(menu);
+        });
       }
     },
     //是否外链修改
     handleIsFrameChange (row) {
       let text = row.isFrame === 1 ? "设置外链" : "取消外链";
       this.$modal.confirm('确认要"' + text + '""' + row.menuName + '"菜单吗？').then(function () {
-      let data = {
-        pkMenuId:row.pkMenuId,
-        isFrame:row.isFrame,
-      }
+        let data = {
+          pkMenuId: row.pkMenuId,
+          isFrame: row.isFrame,
+        }
         return updateMenu(data);
       }).then(() => {
         this.$modal.msgSuccess(text + "成功");
@@ -387,10 +392,10 @@ export default {
         text = text + "顶级目录"
       }
       this.$modal.confirm('确认要"' + text + '""' + row.menuName + '"菜单吗？').then(function () {
-      let data = {
-        pkMenuId:row.pkMenuId,
-        status:row.status,
-      }
+        let data = {
+          pkMenuId: row.pkMenuId,
+          status: row.status,
+        }
         return updateMenu(data);
       }).then(() => {
         this.$modal.msgSuccess(text + "成功");
@@ -417,7 +422,7 @@ export default {
         isCache: 0,
         visible: 1,
         status: 1,
-        sort:1
+        sort: 1
       };
       this.resetForm("form");
     },
@@ -465,6 +470,12 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.pkMenuId != undefined) {
+            //修改了菜单后，某些值需要重新设置一下
+            if (this.form.menuType === 'M') {
+              this.form.perms = '';
+              this.form.component = '';
+              this.form.isCache = 0;
+            }
             updateMenu(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;

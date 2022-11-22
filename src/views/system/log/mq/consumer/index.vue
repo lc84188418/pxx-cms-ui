@@ -8,10 +8,10 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <el-form-item label="主题" prop="modules">
+      <el-form-item label="主题" prop="topic">
         <el-input
           v-model="queryParams.topic"
-          placeholder="请输入模块"
+          placeholder="请输入主题"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
@@ -59,7 +59,7 @@
         prop="pkConsumerId"
         :show-overflow-tooltip="true"
       />
-      <el-table-column label="主题" align="center" key="topic" prop="topic"/>
+      <el-table-column label="主题" align="center" key="topic" prop="topic" />
       <!-- <el-table-column label="flag" align="center" key="flag" prop="flag" width="50"/> -->
       <!-- <el-table-column label="properties" align="center" key="properties" prop="properties"/> -->
       <!-- <el-table-column label="消息体" align="center" key="body" prop="body"/> -->
@@ -67,9 +67,15 @@
       <!-- <el-table-column label="分区名" align="center" key="brokerName" prop="brokerName"/> -->
       <!-- <el-table-column label="出生地址" align="center" key="bornHost" prop="bornHost" width="180"/> -->
       <!-- <el-table-column label="存储地址" align="center" key="storeHost" prop="storeHost" width="180"/> -->
-      <el-table-column label="事务id" align="center" key="transactionId" prop="transactionId" width="150"/>
-      <el-table-column label="消息id" align="center" key="msgId" prop="msgId" width="300"/>
-      <el-table-column label="存储大小" align="center" key="storeSize" prop="storeSize"/>
+      <el-table-column
+        label="事务id"
+        align="center"
+        key="transactionId"
+        prop="transactionId"
+        width="150"
+      />
+      <el-table-column label="消息id" align="center" key="msgId" prop="msgId" width="300" />
+      <el-table-column label="存储大小" align="center" key="storeSize" prop="storeSize" />
 
       <el-table-column label="消费时间" align="center" prop="bornTimeStamp">
         <template slot-scope="scope">
@@ -108,75 +114,106 @@
     />
 
     <!-- 查看日志详情对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
+    <!-- <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
       <el-form ref="form" :model="form">
-        <el-form-item label="日志id:" prop="pkOperateId">
-          <span >{{form.pkOperateId}}</span>
+        <el-form-item label="消费者主键:" prop="pkConsumerId">
+          <span>{{form.pkConsumerId}}</span>
         </el-form-item>
-        <el-form-item label="模块:" prop="modules">
-          <span >{{form.modules}}</span>
+        <el-form-item label="主题:" prop="topic">
+          <span>{{form.topic}}</span>
         </el-form-item>
-        <el-form-item label="业务类型:" prop="businessType">
-          <span >{{form.businessType}}</span>
+        <el-form-item label="flag:" prop="flag">
+          <span>{{form.flag}}</span>
         </el-form-item>
-        <el-form-item label="操作说明:" prop="operateDesc">
-          <span >{{form.operateDesc}}</span>
+        <el-form-item label="properties:" prop="properties">
+          <span>{{form.properties}}</span>
         </el-form-item>
-        <el-form-item label="方法名称:" prop="method">
-          <span >{{form.method}}</span>
+        <el-form-item label="消息体:" prop="body">
+          <span>{{form.body}}</span>
         </el-form-item>
-        <el-form-item label="请求方式:" prop="requestMethod">
-          <span >{{form.requestMethod}}</span>
+        <el-form-item label="事务id:" prop="transactionId">
+          <span>{{form.transactionId}}</span>
         </el-form-item>
-        <el-form-item label="操作类别:" prop="operateType">
-          <span >{{form.operateType}}</span>
+        <el-form-item label="分区名:" prop="brokerName">
+          <span>{{form.brokerName}}</span>
         </el-form-item>
-        <el-form-item label="操作人员id:" prop="userId">
-          <span >{{form.userId}}</span>
+        <el-form-item label="队列id:" prop="queueId">
+          <span>{{form.queueId}}</span>
         </el-form-item>
-        <el-form-item label="操作人员姓名:" prop="userName">
-          <span >{{form.userName}}</span>
+        <el-form-item label="存储大小:" prop="storeSize">
+          <span>{{form.storeSize}}</span>
         </el-form-item>
-        <el-form-item label="部门名称:" prop="deptName">
-          <span >{{form.deptName}}</span>
+        <el-form-item label="queueOffset:" prop="queueOffset">
+          <span>{{form.queueOffset}}</span>
         </el-form-item>
-        <el-form-item label="请求URL:" prop="url">
-          <span >{{form.url}}</span>
+        <el-form-item label="sysFlag:" prop="sysFlag">
+          <span>{{form.sysFlag}}</span>
         </el-form-item>
-        <el-form-item label="主机地址:" prop="ip">
-          <span >{{form.ip}}</span>
+        <el-form-item label="消费时间:" prop="bornTimeStamp">
+          <span>{{form.bornTimeStamp}}</span>
         </el-form-item>
-        <el-form-item label="操作地点:" prop="location">
-          <span >{{form.location}}</span>
+        <el-form-item label="出生地址:" prop="bornHost">
+          <span>{{form.bornHost}}</span>
         </el-form-item>
-        <el-form-item label="请求参数:" prop="requestParam">
-          <span >{{form.requestParam}}</span>
+        <el-form-item label="存储时间:" prop="storeTimeStamp">
+          <span>{{form.storeTimeStamp}}</span>
         </el-form-item>
-        <el-form-item label="返回参数:" prop="jsonResult">
-          <span >{{form.jsonResult}}</span>
+        <el-form-item label="存储地址:" prop="storeHost">
+          <span>{{form.storeHost}}</span>
         </el-form-item>
-        <el-form-item label="操作状态:" prop="status">
-          <span >{{form.status}}</span>
+        <el-form-item label="消息id:" prop="msgId">
+          <span>{{form.msgId}}</span>
         </el-form-item>
-        <el-form-item label="操作时间:" prop="createTime">
-          <span >{{form.createTime}}</span>
+        <el-form-item label="commitLogOffset:" prop="commitLogOffset">
+          <span>{{form.commitLogOffset}}</span>
         </el-form-item>
-        <el-form-item label="操作版本号:" prop="version">
-          <span >{{form.version}}</span>
+        <el-form-item label="bodyCrc:" prop="bodyCrc">
+          <span>{{form.bodyCrc}}</span>
+        </el-form-item>
+        <el-form-item label="reconsumeTimes:" prop="reconsumeTimes">
+          <span>{{form.reconsumeTimes}}</span>
+        </el-form-item>
+        <el-form-item label="preparedTransactionOffset:" prop="preparedTransactionOffset">
+          <span>{{form.preparedTransactionOffset}}</span>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="cancel">确 定</el-button>
       </div>
+    </el-dialog>-->
+    <!-- 查看mq日志详情对话框 -->
+    <el-dialog :title="title" :visible.sync="open" width="1250px" append-to-body>
+      <el-descriptions class="margin-top" title :column="2" size="small" colon border="true">
+        <el-descriptions-item label="主键ID">{{form.pkConsumerId}}</el-descriptions-item>
+        <el-descriptions-item label="主题">{{form.topic}}</el-descriptions-item>
+        <el-descriptions-item label="flag">{{form.flag}}</el-descriptions-item>
+        <el-descriptions-item label="事务ID">{{form.transactionId}}</el-descriptions-item>
+        <el-descriptions-item label="消息id">{{form.msgId}}</el-descriptions-item>
+        <el-descriptions-item label="队列ID">{{form.queueId}}</el-descriptions-item>
+        <el-descriptions-item label="存储大小">{{form.storeSize}}</el-descriptions-item>
+        <el-descriptions-item label="queueOffset">{{form.queueOffset}}</el-descriptions-item>
+        <el-descriptions-item label="sysFlag">{{form.sysFlag}}</el-descriptions-item>
+        <el-descriptions-item label="消费时间">{{parseTime(form.bornTimeStamp)}}</el-descriptions-item>
+        <el-descriptions-item label="出生地址">{{form.bornHost}}</el-descriptions-item>
+        <el-descriptions-item label="存储时间">{{parseTime(form.storeTimeStamp)}}</el-descriptions-item>
+        <el-descriptions-item label="存储地址">{{form.storeHost}}</el-descriptions-item>
+        <el-descriptions-item label="分区名">{{form.brokerName}}</el-descriptions-item>
+        <el-descriptions-item label="commitLogOffset">{{form.commitLogOffset}}</el-descriptions-item>
+        <el-descriptions-item label="bodyCrc">{{form.bodyCrc}}</el-descriptions-item>
+        <el-descriptions-item label="reconsumeTimes">{{form.reconsumeTimes}}</el-descriptions-item>
+        <el-descriptions-item label="preparedTransactionOffset">{{form.preparedTransactionOffset}}</el-descriptions-item>
+        <el-descriptions-item label="properties">{{form.properties}}</el-descriptions-item>
+        <el-descriptions-item label="消息体">{{form.body}}</el-descriptions-item>
+      </el-descriptions>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { listMqConsumer, getMqConsumer, delMqConsumer} from "@/api/system/log/mq";
+import { listMqConsumer, getMqConsumer, delMqConsumer } from "@/api/system/log/mq";
 export default {
   name: "ConsumerMq",
-  dicts: ['sys_oper_type','request_method'],
+  dicts: ['sys_oper_type', 'request_method'],
   data () {
     return {
       // 遮罩层
@@ -250,7 +287,7 @@ export default {
       getMqConsumer(pkConsumerId).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "操作日志详情";
+        this.title = "MQ日志：消费日志详情";
       });
     },
 
