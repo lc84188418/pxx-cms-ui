@@ -3,7 +3,12 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
       <h3 class="title">PXX后台管理系统</h3>
       <el-form-item prop="username">
-        <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号/手机号/邮箱">
+        <el-input
+          v-model="loginForm.username"
+          type="text"
+          auto-complete="off"
+          placeholder="账号/手机号/邮箱"
+        >
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
@@ -56,9 +61,19 @@
         <span>其他登录方式</span>
         <el-row :data="justAuths">
           <el-button icon="el-icon-search" circle @click="handleAuthRender('gitee')">示例</el-button>
-          <el-button circle @click="handleAuthRender(item.clientSign)" v-for="item,index in justAuths" :key="index">{{item.clientSign}}</el-button>
-          <svg-icon :icon-class="item.clientSign" @click="handleAuthRender(item.clientSign)" v-for="item,index in justAuths" :key="index"/>
-          <svg-icon icon-class="qq" @click="handleAuthRender(qq)"/>
+          <el-button
+            circle
+            @click="handleAuthRender(item.clientSign)"
+            v-for="item,index in justAuths"
+            :key="index"
+          >{{item.clientSign}}</el-button>
+          <svg-icon
+            :icon-class="item.clientSign"
+            @click="handleAuthRender(item.clientSign)"
+            v-for="item,index in justAuths"
+            :key="index"
+          />
+          <svg-icon icon-class="qq" @click="handleAuthRender(qq)" />
         </el-row>
       </div>
     </el-form>
@@ -71,8 +86,8 @@
 </template>
 
 <script>
-import { getJustAuth } from "@/api/login";
-import { authRender } from "@/api/login";
+import { getJustAuth, authRender, } from "@/api/login";
+// import { authRender } from "@/api/login";
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from '@/utils/jsencrypt'
 import TIM from '@/utils/tim'
@@ -104,7 +119,7 @@ export default {
       register: false,
       redirect: undefined,
       //登录结果
-      loginResult:{},
+      loginResult: {},
       justAuths: []
     };
   },
@@ -140,21 +155,21 @@ export default {
 
     /** 访问第三方授权 */
     handleAuthRender (source) {
-      console.log('访问第三方授权'+source);
+      console.log('访问第三方授权' + source);
       authRender(source).then(res => {
         // console.log(res);
         //window.open(res).then(result => {})
         var width = width || 900;
-		    var height = height || 540;
-				var left = (window.screen.width - width) / 2;
-				var top = (window.screen.height - height) / 2;
-        var win = window.open(res, "_blank","toolbar=yes, location=yes, directories=no, status=no, menubar=yes, scrollbars=yes, resizable=no, copyhistory=yes, left=" + left + ", top=" + top + ", width=" + width + ", height=" + height);
+        var height = height || 540;
+        var left = (window.screen.width - width) / 2;
+        var top = (window.screen.height - height) / 2;
+        var win = window.open(res, "_blank", "toolbar=yes, location=yes, directories=no, status=no, menubar=yes, scrollbars=yes, resizable=no, copyhistory=yes, left=" + left + ", top=" + top + ", width=" + width + ", height=" + height);
         // console.log(win.closed);
 
-		    //监听登录窗口是否关闭,登录成功后 后端返回关闭窗口的代码
-		    var listener = setInterval(function(){
+        //监听登录窗口是否关闭,登录成功后 后端返回关闭窗口的代码
+        var listener = setInterval(function () {
           //监听窗口是否关闭
-          if(win.closed){
+          if (win.closed) {
             //进入这个if代表后端验证成功!直接跳转路由
             //关闭监听
             clearInterval(listener);
@@ -167,7 +182,7 @@ export default {
             // });
             // this.$router.go(0) //刷新
           }
-			  },500)
+        }, 500)
 
 
       });

@@ -23,9 +23,9 @@
         <el-select v-model="queryParams.noticeType" placeholder="公告类型" clearable size="small">
           <el-option
             v-for="dict in dict.type.sys_notice_type"
-            :key="dict.label"
-            :label="dict.value"
-            :value="dict.label"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
           />
         </el-select>
       </el-form-item>
@@ -199,7 +199,7 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
-        pageNum: 1,
+        pageNum: undefined,
         pageSize: 10,
         noticeTitle: undefined,
         createBy: undefined,
@@ -226,8 +226,8 @@ export default {
     getList() {
       this.loading = true;
       listNotice(this.queryParams).then(response => {
-        this.noticeList = response.rows;
-        this.total = response.total;
+        this.noticeList = response.data.list;
+        this.total = response.data.total;
         this.loading = false;
       });
     },

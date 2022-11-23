@@ -62,8 +62,8 @@ export default class Dict {
  * @returns {Promise}
  */
 function loadDict(dict, dictMeta) {
-  console.log("dict",dict);
-  console.log("dictMeta",dictMeta);
+  // console.log("dict",dict);
+  // console.log("dictMeta",dictMeta);
 
   return dictMeta.request(dictMeta)
     .then(response => {
@@ -77,7 +77,7 @@ function loadDict(dict, dictMeta) {
         dicts = []
       }
       dict.type[type].splice(0, Number.MAX_SAFE_INTEGER, ...dicts)
-      console.log(dicts);
+      // console.log(dicts);
 
       dicts.forEach(d => {
         Vue.set(dict.label[type], d.value, d.label)

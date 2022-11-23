@@ -3,7 +3,16 @@ import request from '@/utils/request'
 // 查询公告列表
 export function listNotice(query) {
   return request({
-    url: '/system/notice/list',
+    url: '/system/notice',
+    method: 'get',
+    params: query
+  })
+}
+
+// 用户获取公告列表
+export function userGetNoticeList(query) {
+  return request({
+    url: '/system/notice/user/getNotice',
     method: 'get',
     params: query
   })

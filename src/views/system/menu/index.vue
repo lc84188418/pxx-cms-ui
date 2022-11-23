@@ -298,7 +298,7 @@ import IconSelect from "@/components/IconSelect";
 
 export default {
   name: "Menu",
-  dicts: ['sys_show_hide', 'sys_normal_disable', 'sys_menu_type'],
+  dicts: ['sys_show_hide', 'sys_normal_disable', 'sys_menu_type', 'sys_yes_no'],
   components: { Treeselect, IconSelect },
   data () {
     return {

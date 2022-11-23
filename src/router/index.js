@@ -87,6 +87,20 @@ export const constantRoutes = [
         meta: { title: '个人中心', icon: 'user' }
       }
     ]
+  },
+  {
+    path: '/im',
+    component: Layout,
+    hidden: true,
+    redirect: 'noredirect',
+    children: [
+      {
+        path: 'msg',
+        component: () => import('@/views/im/msg'),
+        name: 'ImMsgSystem',
+        meta: { title: '消息通知', icon: 'el-icon-chat-dot-round' }
+      }
+    ]
   }
 ]
 

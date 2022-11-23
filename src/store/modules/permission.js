@@ -1,5 +1,7 @@
 import { constantRoutes } from '@/router'
 import { getRouters } from '@/api/menu'
+import { getUserSig } from "@/api/im/im";
+import tim from '@/utils/tim'
 import Layout from '@/layout/index'
 import ParentView from '@/components/ParentView'
 import InnerLink from '@/layout/components/InnerLink'
@@ -39,7 +41,7 @@ const permission = {
         // 向后端请求路由数据
         getRouters().then(res => {
           let data = res.data
-          // const user = data.user
+          const user = data.user
           // const roles = data.roles
           const menus = data.menus
 
@@ -53,7 +55,29 @@ const permission = {
           commit('SET_DEFAULT_ROUTES', sidebarRoutes)
           commit('SET_TOPBAR_ROUTES', sidebarRoutes)
           resolve(rewriteRoutes)
+        //
+        console.log("user-------------------------",user);
+
+          console.log("222222222222222222222222222222");
+          getUserSig(user.userName).then(res => {
+            console.log("userSig-------------------------",res);
+            // this.userSig = res;
+
+            let promise = tim.login({userID: user.userName, userSig: res});
+            promise.then(function(imResponse) {
+              console.log("登录成功-------------------------");
+
+              console.log(imResponse.data); // 登录成功
+              if (imResponse.data.repeatLogin === true) {
+                // 标识帐号已登录，本次登录操作为重复登录。v2.5.1 起支持
+                console.log(imResponse.data.errorInfo);
+              }
+            }).catch(function(imError) {
+              console.warn('login error:', imError); // 登录失败的相关信息
+            });
+          });
         })
+
       })
     }
   }
