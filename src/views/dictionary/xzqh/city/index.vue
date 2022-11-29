@@ -199,8 +199,9 @@
       <el-table-column
         label="车牌"
         align="center"
-        key="licensePlate"
-        prop="licensePlate"
+        key="license"
+        prop="license"
+        sortable
         v-if="columns[7].visible"
       />
       <el-table-column
@@ -298,8 +299,8 @@
         <el-form-item label="邮编" prop="youbian">
           <el-input v-model="form.youbian" placeholder="请输入邮编" />
         </el-form-item>
-        <el-form-item label="车牌字母" prop="licenseLetter">
-          <el-select v-model="form.licenseLetters" multiple placeholder="请选择">
+        <el-form-item label="车牌字母" prop="license">
+          <el-select v-model="form.licenseLetters" multiple filterable placeholder="请选择">
             <el-option v-for="item in options" :key="item" :label="item" :value="item"></el-option>
           </el-select>
         </el-form-item>
@@ -354,8 +355,6 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
-      // 所属省份的简称，用于拼接车牌前缀
-      provinceAbbreviation: '',
       // 查询参数
       queryParams: {
         pageNum: 1,
