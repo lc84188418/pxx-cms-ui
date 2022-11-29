@@ -120,7 +120,7 @@
     <el-table
       v-loading="loading"
       :data="cityList"
-      @sort-change = "sortChange"
+      @sort-change="sortChange"
       :header-cell-style="handleTheadStyle"
       @selection-change="handleSelectionChange"
       ref="orderTable"
@@ -196,13 +196,41 @@
         sortable
         v-if="columns[7].visible"
       />
-      <el-table-column label="排序" align="center" key="sort" prop="sort" width="80" sortable v-if="columns[8].visible" />
-      <el-table-column label="创建时间" align="center" prop="create_time" width="160" sortable v-if="columns[9].visible">
+      <el-table-column
+        label="车牌"
+        align="center"
+        key="licensePlate"
+        prop="licensePlate"
+        v-if="columns[7].visible"
+      />
+      <el-table-column
+        label="排序"
+        align="center"
+        key="sort"
+        prop="sort"
+        width="75"
+        sortable
+        v-if="columns[8].visible"
+      />
+      <el-table-column
+        label="创建时间"
+        align="center"
+        prop="create_time"
+        width="160"
+        sortable
+        v-if="columns[9].visible"
+      >
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新时间" align="center" prop="updateTime" width="160" v-if="columns[10].visible">
+      <el-table-column
+        label="更新时间"
+        align="center"
+        prop="updateTime"
+        width="160"
+        v-if="columns[10].visible"
+      >
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
@@ -259,16 +287,24 @@
           <el-input v-model="form.cityName" placeholder="请输入城市名称" />
         </el-form-item>
         <el-form-item label="拼音" prop="pinyin">
-          <el-input v-model="form.pinyin" disabled/>
+          <el-input v-model="form.pinyin" disabled />
         </el-form-item>
         <el-form-item label="区划代码" prop="zoningCode">
           <el-input v-model="form.zoningCode" placeholder="请输入区划代码" />
         </el-form-item>
+        <el-form-item label="电话区号" prop="telAreaCode">
+          <el-input v-model="form.telAreaCode" placeholder="请输入电话区号" />
+        </el-form-item>
         <el-form-item label="邮编" prop="youbian">
           <el-input v-model="form.youbian" placeholder="请输入邮编" />
         </el-form-item>
-        <el-form-item label="电话区号" prop="telAreaCode">
-          <el-input v-model="form.telAreaCode" placeholder="请输入电话区号" />
+        <el-form-item label="车牌字母" prop="licenseLetter">
+          <el-select v-model="form.licenseLetters" multiple placeholder="请选择">
+            <el-option v-for="item in options" :key="item" :label="item" :value="item"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="车牌前缀" prop="licensePlate">
+          <el-input v-model="form.licensePlate" disabled />
         </el-form-item>
         <el-form-item label="排序" prop="sort">
           <el-input-number v-model="form.sort" controls-position="right" :min="1" />
@@ -292,7 +328,7 @@
 </template>
 
 <script>
-import { listCity, getCity, delCity, addCity, updateCity, changeCityStatus,syncCityData } from "@/api/dictionary/xzqh/city";
+import { listCity, getCity, delCity, addCity, updateCity, changeCityStatus, syncCityData } from "@/api/dictionary/xzqh/city";
 
 export default {
   name: "City",
@@ -318,11 +354,13 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      // 所属省份的简称，用于拼接车牌前缀
+      provinceAbbreviation: '',
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 15,
-        orderBy:[],
+        orderBy: [],
         fkProvinceId: undefined,
         cityName: undefined,
         zoningCode: undefined,
@@ -364,7 +402,8 @@ export default {
             trigger: "blur"
           }
         ]
-      }
+      },
+      options: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
     };
   },
   created () {
@@ -393,7 +432,7 @@ export default {
     },
 
     //排序操作
-    sortChange({ order, prop }) {
+    sortChange ({ order, prop }) {
       let isHave = false;
       //先判断该排序规则，在本地缓存中是否有
       for (const i in this.orderBys) {
@@ -401,22 +440,22 @@ export default {
           isHave = true;
         }
       }
-      if(!isHave){
+      if (!isHave) {
         // 如果不存在，向数组orderBys中添加当前节点的prop
         this.orderBys.push(prop);
       }
-      for (let i=0;i<this.orderBys.length;i++) {
+      for (let i = 0; i < this.orderBys.length; i++) {
         //触发的排序和本地缓存的排序相同
         if (this.orderBys[i].indexOf(prop) > -1) {
-          if(order === 'ascending' || order ==='descending'){
-            if(order === 'ascending'){
+          if (order === 'ascending' || order === 'descending') {
+            if (order === 'ascending') {
               this.orderBys[i] = prop + ' asc';
-            }else{
+            } else {
               this.orderBys[i] = prop + ' desc';
             }
-          }else {
+          } else {
             //该排序规则置为空
-            this.orderBys.splice(i,1);
+            this.orderBys.splice(i, 1);
           }
         }
       }
@@ -460,7 +499,7 @@ export default {
     /** 排序重置按钮操作 */
     resetOrder () {
       this.$refs.orderTable.clearSort();
-      this.$refs.orderTable.sort('sort','szm','create_time');
+      this.$refs.orderTable.sort('sort', 'szm', 'create_time');
       this.curThead = [];
       this.queryParams.orderBy = [];
       this.getList();
@@ -473,9 +512,9 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd () {
-      if(!this.isParentLink){
+      if (!this.isParentLink) {
         alert("请从上级进入方可操作!");
-      }else {
+      } else {
         this.reset();
         //将上级参数放入表单中
         this.form.fkProvinceId = this.queryParams.fkProvinceId;
@@ -490,6 +529,17 @@ export default {
       const cityId = row.pkCityId || this.ids
       getCity(cityId).then(response => {
         this.form = response.data;
+        //重新计算车牌
+        this.form.licensePlate = '';
+        // console.log('开始前', this.form.licensePlate);
+        let licenseLettersTemp = response.data.licenseLetters;
+        if (licenseLettersTemp.length > 0) {
+          licenseLettersTemp.forEach(item => {
+            this.form.licensePlate += this.form.abbreviation + item + ',';
+          })
+        }
+
+        // console.log('开始后', this.form.licensePlate);
         this.open = true;
         this.title = "修改城市";
       });

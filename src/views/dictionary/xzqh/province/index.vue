@@ -99,7 +99,7 @@
     <el-table
       v-loading="loading"
       :data="provinceList"
-      @sort-change = "sortChange"
+      @sort-change="sortChange"
       @selection-change="handleSelectionChange"
       class="dictionary-xzqh-table"
       style="width: 100%"
@@ -148,7 +148,15 @@
         prop="provinceCapital"
         v-if="columns[4].visible"
       />
-      <el-table-column label="首字母" align="center" key="szm" prop="szm" width="90" sortable = custom v-if="columns[5].visible" />
+      <el-table-column
+        label="首字母"
+        align="center"
+        key="szm"
+        prop="szm"
+        width="90"
+        sortable="custom"
+        v-if="columns[5].visible"
+      />
       <el-table-column
         label="排序"
         align="center"
@@ -158,12 +166,25 @@
         v-if="columns[6].visible"
         width="80"
       />
-      <el-table-column label="创建时间" align="center" prop="create_time" width="160" sortable v-if="columns[7].visible">
+      <el-table-column
+        label="创建时间"
+        align="center"
+        prop="create_time"
+        width="160"
+        sortable
+        v-if="columns[7].visible"
+      >
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新时间" align="center" prop="updateTime" width="160" v-if="columns[8].visible">
+      <el-table-column
+        label="更新时间"
+        align="center"
+        prop="updateTime"
+        width="160"
+        v-if="columns[8].visible"
+      >
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
@@ -226,7 +247,7 @@
           <el-input v-model="form.provinceCapital" placeholder="请输入省会" />
         </el-form-item>
         <el-form-item label="类别" prop="type">
-          <el-radio-group v-model="form.type">
+          <el-radio-group v-model="form.type" disabled>
             <el-radio :label="1">省</el-radio>
             <el-radio :label="2">直辖市</el-radio>
             <el-radio :label="3">自治区</el-radio>
@@ -252,7 +273,7 @@
 </template>
 
 <script>
-import { listProvince, getProvince, delProvince, addProvince, updateProvince, changeProvinceStatus ,syncProvinceData} from "@/api/dictionary/xzqh/province";
+import { listProvince, getProvince, delProvince, addProvince, updateProvince, changeProvinceStatus, syncProvinceData } from "@/api/dictionary/xzqh/province";
 export default {
   name: "Province",
   data () {
@@ -279,7 +300,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 15,
-        orderBy:[],
+        orderBy: [],
         zoningCode: undefined,
         provinceName: undefined,
         abbreviation: undefined,
@@ -325,7 +346,7 @@ export default {
       );
     },
     //排序操作
-    sortChange({ order, prop }) {
+    sortChange ({ order, prop }) {
       let isHave = false;
       //先判断该排序规则，在本地缓存中是否有
       for (const i in this.orderBys) {
@@ -333,21 +354,21 @@ export default {
           isHave = true;
         }
       }
-      if(!isHave){
+      if (!isHave) {
         this.orderBys.push(prop);
       }
-      for (let i=0;i<this.orderBys.length;i++) {
+      for (let i = 0; i < this.orderBys.length; i++) {
         //触发的排序和本地缓存的排序相同
         if (this.orderBys[i].indexOf(prop) > -1) {
-          if(order === 'ascending' || order ==='descending'){
-            if(order === 'ascending'){
+          if (order === 'ascending' || order === 'descending') {
+            if (order === 'ascending') {
               this.orderBys[i] = prop + ' asc';
-            }else{
+            } else {
               this.orderBys[i] = prop + ' desc';
             }
-          }else {
+          } else {
             //该排序规则置为空
-            this.orderBys.splice(i,1);
+            this.orderBys.splice(i, 1);
           }
         }
       }
